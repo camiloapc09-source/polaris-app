@@ -90,13 +90,18 @@ export default function LoginPage() {
         background: 'white',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'center',
-        padding: '0 56px',
+        justifyContent: 'flex-start',
+        padding: '48px 56px',
+        overflowY: 'auto',
       }}>
 
-        {/* Logo mobile / form header */}
-        <div style={{ marginBottom: 36 }}>
-          <StarShineLogo variant="purple" width={140} style={{ marginBottom: 28 }} />
+        {/* Logo */}
+        <div style={{ marginBottom: 40 }}>
+          <StarShineLogo variant="purple" width={130} />
+        </div>
+
+        {/* Heading */}
+        <div style={{ marginBottom: 32 }}>
           <h1 style={{ color: '#0F1026', fontWeight: 800, fontSize: 28, letterSpacing: '-0.02em', marginBottom: 6 }}>
             Bienvenido
           </h1>
