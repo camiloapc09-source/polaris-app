@@ -1,0 +1,228 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("EMPLOYEE")
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company   Company?  @relation(fields: [companyId], references: [id])
+  companyId String?
+
+  employee   Employee? @relation(fields: [employeeId], references: [id])
+  employeeId String?   @unique
+}
+
+model Company {
+  id           String   @id @default(cuid())
+  name         String
+  country      String   @default("US")
+  currency     String   @default("USD")
+  contactName  String?
+  contactEmail String?
+  logoUrl      String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  users              User[]
+  employees          Employee[]
+  incomes            Income[]
+  serviceInvoices    ServiceInvoice[]
+  programasBienestar ProgramaBienestar[]
+}
+
+model Employee {
+  id           String   @id @default(cuid())
+  firstName    String
+  lastName     String
+  email        String   @unique
+  phone        String?
+  position     String   @default("Employee")
+  startDate    DateTime
+  salary       Float
+  status       String   @default("ACTIVE")
+  avatarUrl    String?
+  bankAccount          String?
+  bankName             String?
+  cedula               String?
+  conectividadDefault  Float    @default(0)
+  toolsDefault         Float    @default(0)
+  createdAt            DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  company   Company @relation(fields: [companyId], references: [id])
+  companyId String
+
+  user                 User?
+  payPeriods           PayPeriod[]
+  socialContributions  SocialContribution[]
+  leaveRequests        LeaveRequest[]
+  certificados         CertificadoLaboral[]
+  examenesMedicos      ExamenMedico[]
+  inscripciones        InscripcionBienestar[]
+}
+
+model PayPeriod {
+  id            String   @id @default(cuid())
+  periodStart   DateTime
+  periodEnd     DateTime
+  periodLabel   String
+  baseSalary    Float
+  conectividad  Float    @default(0)
+  tools         Float    @default(0)
+  bonus         Float    @default(0)
+  otherAdd      Float    @default(0)
+  otherAddNote  String?
+  deductions    Float    @default(0)
+  deductionNote String?
+  netPay        Float
+  status        String   @default("DRAFT")
+  paidAt        DateTime?
+  supportUrl    String?
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  employee   Employee @relation(fields: [employeeId], references: [id])
+  employeeId String
+}
+
+model SocialContribution {
+  id         String   @id @default(cuid())
+  period     String
+  health     Float    @default(0)
+  pension    Float    @default(0)
+  arl        Float    @default(0)
+  caja       Float    @default(0)
+  lateFee    Float    @default(0)
+  total      Float
+  status     String   @default("PENDING")
+  paidAt     DateTime?
+  voucherUrl String?
+  createdAt  DateTime @default(now())
+
+  employee   Employee @relation(fields: [employeeId], references: [id])
+  employeeId String
+}
+
+model Income {
+  id          String   @id @default(cuid())
+  date        DateTime
+  amountUSD   Float?
+  amountCOP   Float
+  exchangeRate Float?
+  platform    String   @default("WISE")
+  description String?
+  supportUrl  String?
+  createdAt   DateTime @default(now())
+
+  company   Company @relation(fields: [companyId], references: [id])
+  companyId String
+}
+
+model ServiceInvoice {
+  id          String   @id @default(cuid())
+  period      String
+  baseAmount  Float
+  iva         Float    @default(0)
+  total       Float
+  invoiceRef  String?
+  status      String   @default("PENDING")
+  paidAt      DateTime?
+  createdAt   DateTime @default(now())
+
+  company   Company @relation(fields: [companyId], references: [id])
+  companyId String
+}
+
+model LeaveRequest {
+  id          String   @id @default(cuid())
+  type        String   @default("SICK")
+  startDate   DateTime
+  endDate     DateTime
+  days        Int
+  description String?
+  documentUrl String?
+  status      String   @default("PENDING")
+  reviewNote  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  employee   Employee @relation(fields: [employeeId], references: [id])
+  employeeId String
+}
+
+model CertificadoLaboral {
+  id          String   @id @default(cuid())
+  type        String   // CARTA_LABORAL, CERT_INGRESOS, CERT_VACACIONES, OTRO
+  status      String   @default("PENDING") // PENDING, GENERATED, DELIVERED
+  requestNote String?
+  adminNote   String?
+  documentUrl String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  employee   Employee @relation(fields: [employeeId], references: [id])
+  employeeId String
+}
+
+model ExamenMedico {
+  id           String   @id @default(cuid())
+  type         String   @default("PERIODICO") // INGRESO, PERIODICO, EGRESO
+  examDate     DateTime
+  nextExamDate DateTime?
+  clinic       String?
+  result       String   @default("APTO") // APTO, APTO_CON_RESTRICCIONES, NO_APTO, PENDIENTE
+  evidenceUrl  String?
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  employee   Employee @relation(fields: [employeeId], references: [id])
+  employeeId String
+}
+
+model ProgramaBienestar {
+  id          String   @id @default(cuid())
+  title       String
+  category    String   @default("OTRO") // PSICOLOGIA, ACTIVIDAD_FISICA, NUTRICION, OTRO
+  description String?
+  provider    String?
+  schedule    String?
+  capacity    Int?
+  isActive    Boolean  @default(true)
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  company    Company @relation(fields: [companyId], references: [id])
+  companyId  String
+
+  inscripciones InscripcionBienestar[]
+}
+
+model InscripcionBienestar {
+  id         String   @id @default(cuid())
+  status     String   @default("INSCRITO") // INSCRITO, COMPLETADO, CANCELADO
+  createdAt  DateTime @default(now())
+
+  programa   ProgramaBienestar @relation(fields: [programaId], references: [id])
+  programaId String
+
+  employee   Employee @relation(fields: [employeeId], references: [id])
+  employeeId String
+
+  @@unique([programaId, employeeId])
+}
