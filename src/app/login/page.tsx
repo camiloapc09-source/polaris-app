@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import { StarShineLogo } from '@/components/brand/StarShineLogo'
 
 function EyeIcon({ open }: { open: boolean }) {
   return open ? (
@@ -53,7 +54,7 @@ export default function LoginPage() {
       >
         {/* Logo */}
         <div style={{ padding: '44px 56px 0' }}>
-          <img src="/logo-orange-star.svg" alt="Star Shine" style={{ width: 160, height: 'auto' }} />
+          <StarShineLogo variant="white-orange" width={160} />
         </div>
 
         {/* Headline — centered */}
@@ -95,7 +96,7 @@ export default function LoginPage() {
 
         {/* Logo mobile / form header */}
         <div style={{ marginBottom: 36 }}>
-          <img src="/logo-purple.svg" alt="Star Shine" style={{ width: 140, height: 'auto', marginBottom: 28 }} />
+          <StarShineLogo variant="purple" width={140} style={{ marginBottom: 28 }} />
           <h1 style={{ color: '#0F1026', fontWeight: 800, fontSize: 28, letterSpacing: '-0.02em', marginBottom: 6 }}>
             Bienvenido
           </h1>

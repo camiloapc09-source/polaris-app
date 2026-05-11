@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
+import { StarShineLogo } from '@/components/brand/StarShineLogo'
 import {
   LayoutDashboard, Users, DollarSign, TrendingUp,
   FileText, LogOut, Building2, Calendar, Receipt,
@@ -59,11 +60,7 @@ export function Sidebar({ role, userName }: SidebarProps) {
 
       {/* Logo */}
       <div style={{ padding: '24px 20px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-        <img
-          src="/logo-white.svg"
-          alt="Star Shine"
-          style={{ width: 130, height: 'auto', display: 'block' }}
-        />
+        <StarShineLogo variant="white" width={130} />
         <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', marginTop: 6 }}>
           Polaris · Gestión de nómina
         </p>
