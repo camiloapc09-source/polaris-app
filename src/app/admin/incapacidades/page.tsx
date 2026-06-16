@@ -24,7 +24,7 @@ export default async function AdminIncapacidadesPage() {
         <p className="text-gray-500 mt-1">Solicitudes de todos los empleados</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-6 mb-8">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, marginBottom: 32 }}>
         <div className="card">
           <p className="text-gray-500 text-sm">Total solicitudes</p>
           <p className="text-2xl font-bold text-brand-navy mt-1">{leaves.length}</p>

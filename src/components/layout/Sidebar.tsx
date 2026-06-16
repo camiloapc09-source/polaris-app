@@ -7,6 +7,7 @@ import {
   LayoutDashboard, Users, DollarSign, TrendingUp,
   FileText, LogOut, Building2, Calendar, Receipt,
   HeartPulse, Stethoscope, Heart, Award, Send,
+  ShieldCheck, UserCog,
 } from 'lucide-react'
 
 interface NavItem { href: string; label: string; icon: React.ElementType; section?: string }
@@ -23,6 +24,8 @@ const adminNav: NavItem[] = [
   { href: '/admin/certificados',   label: 'Certificados',       icon: Award,       section: 'Servicios' },
   { href: '/admin/examenes',       label: 'Exámenes Médicos',   icon: Stethoscope, section: 'Servicios' },
   { href: '/admin/bienestar',      label: 'Bienestar',          icon: Heart,       section: 'Servicios' },
+  { href: '/admin/accesos',        label: 'Accesos y Usuarios', icon: ShieldCheck, section: 'Configuración' },
+  { href: '/admin/cuenta',         label: 'Mi Cuenta',          icon: UserCog,     section: 'Configuración' },
 ]
 
 const clientNav: NavItem[] = [
@@ -33,6 +36,7 @@ const clientNav: NavItem[] = [
   { href: '/client/facturas',      label: 'Facturas',         icon: Receipt },
   { href: '/client/examenes',      label: 'Exámenes Médicos', icon: Stethoscope },
   { href: '/client/bienestar',     label: 'Bienestar',        icon: Heart },
+  { href: '/client/cuenta',        label: 'Mi Cuenta',        icon: UserCog,     section: 'Configuración' },
 ]
 
 const employeeNav: NavItem[] = [
@@ -42,6 +46,7 @@ const employeeNav: NavItem[] = [
   { href: '/employee/certificados',      label: 'Certificados',       icon: Award },
   { href: '/employee/examenes',          label: 'Exámenes Médicos',   icon: Stethoscope },
   { href: '/employee/bienestar',         label: 'Bienestar',          icon: Heart },
+  { href: '/employee/cuenta',            label: 'Mi Cuenta',          icon: UserCog, section: 'Configuración' },
 ]
 
 interface SidebarProps { role: string; userName: string }

@@ -46,7 +46,7 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, marginBottom: 32 }}>
         <StatCard
           title="Saldo Disponible"
           value={formatCOP(balance)}
@@ -71,7 +71,7 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Financial breakdown */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-8">
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 20, marginBottom: 32 }}>
         <div style={{ background: 'white', borderRadius: 16, padding: 24, border: '1px solid #EFEFEF' }}>
           <h3 style={{ color: '#0F1026', fontWeight: 700, fontSize: 15, marginBottom: 20 }}>Distribución de Egresos</h3>
           <div className="space-y-3">
@@ -96,7 +96,7 @@ export default async function AdminDashboard() {
           </div>
         </div>
 
-        <div className="lg:col-span-2" style={{ background: 'white', borderRadius: 16, padding: 24, border: '1px solid #EFEFEF' }}>
+        <div style={{ background: 'white', borderRadius: 16, padding: 24, border: '1px solid #EFEFEF' }}>
           <div className="flex items-center justify-between mb-4">
             <h3 style={{ color: '#0F1026', fontWeight: 700, fontSize: 15 }}>Últimas Nóminas</h3>
             <Link href="/admin/nomina" className="text-brand-purple text-sm font-medium hover:underline">
@@ -125,7 +125,7 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Quick links */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20 }}>
         {[
           { href: '/admin/nomina',         label: 'Registrar Pago',      icon: DollarSign },
           { href: '/admin/ingresos',        label: 'Nuevo Ingreso',       icon: TrendingUp },

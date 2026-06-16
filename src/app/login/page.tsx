@@ -191,20 +191,6 @@ export default function LoginPage() {
           </button>
         </form>
 
-        {/* Credentials */}
-        <div style={{ marginTop: 28, paddingTop: 20, borderTop: '1px solid #F0F0F0', maxWidth: 300 }}>
-          <details>
-            <summary style={{ color: '#CCCCCC', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', cursor: 'pointer', listStyle: 'none' }}>
-              › Cuentas de prueba
-            </summary>
-            <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <p style={{ color: '#BBBBBB', fontSize: 11, fontFamily: 'monospace' }}>admin@starshine.co · admin123</p>
-              <p style={{ color: '#BBBBBB', fontSize: 11, fontFamily: 'monospace' }}>admin@koversolutions.com · kover123</p>
-              <p style={{ color: '#BBBBBB', fontSize: 11, fontFamily: 'monospace' }}>justine@koversolutions.com · justine123</p>
-            </div>
-          </details>
-        </div>
-
       </div>
     </div>
   )
