@@ -6,7 +6,7 @@ import { StarShineLogo } from '@/components/brand/StarShineLogo'
 import {
   LayoutDashboard, Users, DollarSign, TrendingUp,
   FileText, LogOut, Building2, Calendar, Receipt,
-  HeartPulse, Stethoscope, Heart, Award,
+  HeartPulse, Stethoscope, Heart, Award, Send,
 } from 'lucide-react'
 
 interface NavItem { href: string; label: string; icon: React.ElementType; section?: string }
@@ -26,11 +26,13 @@ const adminNav: NavItem[] = [
 ]
 
 const clientNav: NavItem[] = [
-  { href: '/client',               label: 'Dashboard',   icon: LayoutDashboard },
-  { href: '/client/empleados',     label: 'Empleados',   icon: Users },
-  { href: '/client/facturas',      label: 'Facturas',    icon: Receipt },
+  { href: '/client',               label: 'Dashboard',        icon: LayoutDashboard },
+  { href: '/client/empleados',     label: 'Empleados',        icon: Users },
+  { href: '/client/pagos',         label: 'Pagos Enviados',   icon: Send },
+  { href: '/client/colillas',      label: 'Colillas y Aportes', icon: FileText },
+  { href: '/client/facturas',      label: 'Facturas',         icon: Receipt },
   { href: '/client/examenes',      label: 'Exámenes Médicos', icon: Stethoscope },
-  { href: '/client/bienestar',     label: 'Bienestar',   icon: Heart },
+  { href: '/client/bienestar',     label: 'Bienestar',        icon: Heart },
 ]
 
 const employeeNav: NavItem[] = [
@@ -38,6 +40,7 @@ const employeeNav: NavItem[] = [
   { href: '/employee/colillas',          label: 'Colillas de Pago',   icon: FileText },
   { href: '/employee/incapacidades',     label: 'Mis Incapacidades',  icon: HeartPulse },
   { href: '/employee/certificados',      label: 'Certificados',       icon: Award },
+  { href: '/employee/examenes',          label: 'Exámenes Médicos',   icon: Stethoscope },
   { href: '/employee/bienestar',         label: 'Bienestar',          icon: Heart },
 ]
 

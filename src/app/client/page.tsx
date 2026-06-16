@@ -1,7 +1,6 @@
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { formatCOP, formatDate } from '@/lib/utils'
-import { Users, Receipt, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
 
 export default async function ClientDashboard() {
@@ -26,26 +25,30 @@ export default async function ClientDashboard() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-brand-navy">{company?.name}</h1>
-        <p className="text-gray-500 mt-1">Portal de cliente · Star Shine EOR</p>
+      <div style={{ marginBottom: 36 }}>
+        <p style={{ color: '#A2A2A2', fontSize: 11, fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 6 }}>
+          Portal de Cliente · Polaris
+        </p>
+        <h1 style={{ color: '#0F1026', fontSize: 32, fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1 }}>
+          {company?.name}
+        </h1>
+        <p style={{ color: '#BBBBBB', fontSize: 14, marginTop: 6 }}>
+          Portal de cliente · Star Shine EOR
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="card bg-brand-gradient text-white border-0">
-          <Users className="mb-3 text-white/80" size={24} />
-          <p className="text-4xl font-bold">{employees.length}</p>
-          <p className="text-white/70 text-sm mt-1">Empleados activos en Colombia</p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, marginBottom: 32 }}>
+        <div style={{ background: 'linear-gradient(135deg, #4429A6 0%, #7F71D9 100%)', borderRadius: 16, padding: 24, color: 'white' }}>
+          <p style={{ fontSize: 12, opacity: 0.75, marginBottom: 8, fontWeight: 500 }}>Empleados activos en Colombia</p>
+          <p style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-0.02em' }}>{employees.length}</p>
         </div>
-        <div className="card">
-          <Receipt className="mb-3 text-brand-purple" size={24} />
-          <p className="text-4xl font-bold text-brand-navy">{invoices.filter(i => i.status === 'PAID').length}</p>
-          <p className="text-gray-500 text-sm mt-1">Facturas pagadas</p>
+        <div style={{ background: 'white', borderRadius: 16, padding: 24, border: '1px solid #EFEFEF' }}>
+          <p style={{ color: '#A2A2A2', fontSize: 12, marginBottom: 8, fontWeight: 500 }}>Facturas pagadas</p>
+          <p style={{ color: '#0F1026', fontSize: 26, fontWeight: 800, letterSpacing: '-0.02em' }}>{invoices.filter(i => i.status === 'PAID').length}</p>
         </div>
-        <div className="card">
-          <CheckCircle className="mb-3 text-green-500" size={24} />
-          <p className="text-4xl font-bold text-brand-navy">{invoices.filter(i => i.status === 'PENDING').length}</p>
-          <p className="text-gray-500 text-sm mt-1">Facturas pendientes</p>
+        <div style={{ background: 'white', borderRadius: 16, padding: 24, border: '1px solid #EFEFEF' }}>
+          <p style={{ color: '#A2A2A2', fontSize: 12, marginBottom: 8, fontWeight: 500 }}>Facturas pendientes</p>
+          <p style={{ color: '#0F1026', fontSize: 26, fontWeight: 800, letterSpacing: '-0.02em' }}>{invoices.filter(i => i.status === 'PENDING').length}</p>
         </div>
       </div>
 

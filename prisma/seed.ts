@@ -38,13 +38,14 @@ async function main() {
   const justine = await prisma.employee.upsert({
     where: { email: 'justine@koversolutions.com' },
     update: {
+      lastName: 'Escamilla',
       salary: 1150000,
       conectividadDefault: 200000,
       toolsDefault: 99900,
     },
     create: {
       firstName: 'Justine',
-      lastName: 'Empleada',
+      lastName: 'Escamilla',
       email: 'justine@koversolutions.com',
       position: 'Coordinadora',
       startDate: new Date('2026-01-15'),
@@ -71,11 +72,11 @@ async function main() {
   // Employee user
   await prisma.user.upsert({
     where: { email: 'justine@koversolutions.com' },
-    update: {},
+    update: { name: 'Justine Escamilla' },
     create: {
       email: 'justine@koversolutions.com',
       password: employeePassword,
-      name: 'Justine',
+      name: 'Justine Escamilla',
       role: 'EMPLOYEE',
       employeeId: justine.id,
     },

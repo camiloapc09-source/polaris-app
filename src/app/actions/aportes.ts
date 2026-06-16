@@ -11,6 +11,7 @@ export async function createAporte(data: {
   arl: string
   caja: string
   lateFee: string
+  voucherUrl?: string
 }) {
   const health   = parseFloat(data.health)   || 0
   const pension  = parseFloat(data.pension)  || 0
@@ -25,6 +26,7 @@ export async function createAporte(data: {
       period: data.period,
       health, pension, arl, caja, lateFee, total,
       status: 'PENDING',
+      voucherUrl: data.voucherUrl || null,
     },
   })
 

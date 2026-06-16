@@ -1,12 +1,20 @@
 import { prisma } from '@/lib/db'
 import { formatCOP, formatDate } from '@/lib/utils'
 import { NuevoIngresoForm } from './NuevoIngresoForm'
+import { PagosPendientes } from './PagosPendientes'
 
 export default async function IngresosPage() {
-  const incomes = await prisma.income.findMany({
-    orderBy: { date: 'desc' },
-    include: { company: true },
-  })
+  const [incomes, pendingPayments] = await Promise.all([
+    prisma.income.findMany({
+      orderBy: { date: 'desc' },
+      include: { company: true },
+    }),
+    prisma.clientPayment.findMany({
+      where: { status: 'PENDING' },
+      orderBy: { date: 'desc' },
+      include: { company: true },
+    }),
+  ])
 
   const totalCOP = incomes.reduce((s, i) => s + i.amountCOP, 0)
   const totalUSD = incomes.reduce((s, i) => s + (i.amountUSD || 0), 0)
@@ -29,10 +37,12 @@ export default async function IngresosPage() {
         <NuevoIngresoForm />
       </div>
 
+      <PagosPendientes payments={pendingPayments} />
+
       {/* Stats */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, marginBottom: 32 }}>
         <div style={{
-          background: 'linear-gradient(135deg, #4429A6 0%, #F2421B 100%)',
+          background: 'linear-gradient(135deg, #4429A6 0%, #7F71D9 100%)',
           borderRadius: 16, padding: 24, color: 'white',
         }}>
           <p style={{ fontSize: 12, opacity: 0.75, marginBottom: 8, fontWeight: 500 }}>Total recibido (COP)</p>

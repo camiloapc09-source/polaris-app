@@ -1,6 +1,10 @@
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
-import { Heart, Users, Activity, Brain } from 'lucide-react'
+import { Heart, Users, Activity, Brain, CalendarClock, MapPin } from 'lucide-react'
+
+function formatDateTime(d: Date) {
+  return d.toLocaleString('es-CO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+}
 
 const CATEGORY_INFO: Record<string, { label: string; icon: any; bg: string; color: string }> = {
   PSICOLOGIA:       { label: 'Psicología',       icon: Brain,    bg: '#EDE9FE', color: '#4429A6' },
@@ -39,7 +43,7 @@ export default async function ClientBienestarPage() {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, marginBottom: 32 }}>
-        <div style={{ background: 'linear-gradient(135deg, #4429A6 0%, #F2421B 100%)', borderRadius: 16, padding: 24, color: 'white' }}>
+        <div style={{ background: 'linear-gradient(135deg, #4429A6 0%, #7F71D9 100%)', borderRadius: 16, padding: 24, color: 'white' }}>
           <p style={{ fontSize: 12, opacity: 0.75, marginBottom: 8, fontWeight: 500 }}>Programas disponibles</p>
           <p style={{ fontSize: 32, fontWeight: 800 }}>{active}</p>
         </div>
@@ -85,7 +89,7 @@ export default async function ClientBienestarPage() {
                   <Users size={14} color="#4429A6" />
                   <span style={{ fontSize: 13, color: '#4429A6', fontWeight: 700 }}>
                     {prog.inscripciones.length}
-                    {prog.capacity ? `/${prog.capacity}` : ''} inscritos
+                    {prog.capacity ? `/${prog.capacity}` : ''} confirmados
                   </span>
                 </div>
               </div>
@@ -94,16 +98,23 @@ export default async function ClientBienestarPage() {
                 <p style={{ fontSize: 13, color: '#888', padding: '0 24px 12px', lineHeight: 1.6 }}>{prog.description}</p>
               )}
 
-              {(prog.provider || prog.schedule) && (
-                <div style={{ padding: '12px 24px', borderTop: '1px solid #F8F8F8', background: '#FAFAFA', display: 'flex', gap: 24 }}>
+              {(prog.provider || prog.eventDate || prog.location) && (
+                <div style={{ padding: '12px 24px', borderTop: '1px solid #F8F8F8', background: '#FAFAFA', display: 'flex', gap: 24, flexWrap: 'wrap' }}>
                   {prog.provider && (
                     <p style={{ fontSize: 12, color: '#A2A2A2' }}>
                       Proveedor: <span style={{ color: '#0F1026', fontWeight: 600 }}>{prog.provider}</span>
                     </p>
                   )}
-                  {prog.schedule && (
-                    <p style={{ fontSize: 12, color: '#A2A2A2' }}>
-                      Horario: <span style={{ color: '#0F1026', fontWeight: 600 }}>{prog.schedule}</span>
+                  {prog.eventDate && (
+                    <p style={{ fontSize: 12, color: '#A2A2A2', display: 'flex', alignItems: 'center', gap: 5 }}>
+                      <CalendarClock size={12} color="#4429A6" />
+                      <span style={{ color: '#0F1026', fontWeight: 600 }}>{formatDateTime(prog.eventDate)}</span>
+                    </p>
+                  )}
+                  {prog.location && (
+                    <p style={{ fontSize: 12, color: '#A2A2A2', display: 'flex', alignItems: 'center', gap: 5 }}>
+                      <MapPin size={12} color="#4429A6" />
+                      <span style={{ color: '#0F1026', fontWeight: 600 }}>{prog.location}</span>
                     </p>
                   )}
                 </div>
@@ -112,7 +123,7 @@ export default async function ClientBienestarPage() {
               {prog.inscripciones.length > 0 && (
                 <div style={{ padding: '12px 24px 16px', borderTop: '1px solid #F0F0F0' }}>
                   <p style={{ fontSize: 11, fontWeight: 700, color: '#A2A2A2', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>
-                    Empleados inscritos
+                    Empleados confirmados
                   </p>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                     {prog.inscripciones.map((ins) => (

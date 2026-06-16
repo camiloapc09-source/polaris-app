@@ -34,8 +34,9 @@ export function NuevoAporteForm({ employees }: { employees: Employee[] }) {
   const [pension, setPension] = useState('')
   const [arl, setArl]         = useState('')
   const [caja, setCaja]       = useState('')
-  const [lateFee, setLateFee] = useState('')
-  const [saving, setSaving]   = useState(false)
+  const [lateFee, setLateFee]       = useState('')
+  const [voucherUrl, setVoucherUrl] = useState('')
+  const [saving, setSaving]         = useState(false)
   const formRef = useRef<HTMLFormElement>(null)
 
   const total = (
@@ -48,7 +49,7 @@ export function NuevoAporteForm({ employees }: { employees: Employee[] }) {
 
   function handleClose() {
     setOpen(false)
-    setHealth(''); setPension(''); setArl(''); setCaja(''); setLateFee('')
+    setHealth(''); setPension(''); setArl(''); setCaja(''); setLateFee(''); setVoucherUrl('')
     formRef.current?.reset()
   }
 
@@ -64,6 +65,7 @@ export function NuevoAporteForm({ employees }: { employees: Employee[] }) {
       arl:        fd.get('arl')        as string,
       caja:       fd.get('caja')       as string,
       lateFee:    fd.get('lateFee')    as string,
+      voucherUrl: (fd.get('voucherUrl') as string) || undefined,
     })
     setSaving(false)
     handleClose()
@@ -149,7 +151,7 @@ export function NuevoAporteForm({ employees }: { employees: Employee[] }) {
                 </div>
               </div>
 
-              <div style={{ marginBottom: 20 }}>
+              <div style={{ marginBottom: 16 }}>
                 <label style={labelStyle}>Intereses / Mora <span style={{ fontWeight: 400, textTransform: 'none' }}>(opcional)</span></label>
                 <input
                   type="number"
@@ -159,6 +161,18 @@ export function NuevoAporteForm({ employees }: { employees: Employee[] }) {
                   step="100"
                   value={lateFee}
                   onChange={e => setLateFee(e.target.value)}
+                  style={inputStyle}
+                />
+              </div>
+
+              <div style={{ marginBottom: 20 }}>
+                <label style={labelStyle}>Comprobante de pago <span style={{ fontWeight: 400, textTransform: 'none' }}>(link Google Drive, opcional)</span></label>
+                <input
+                  type="url"
+                  name="voucherUrl"
+                  placeholder="https://drive.google.com/..."
+                  value={voucherUrl}
+                  onChange={e => setVoucherUrl(e.target.value)}
                   style={inputStyle}
                 />
               </div>

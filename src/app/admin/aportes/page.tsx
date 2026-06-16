@@ -121,7 +121,7 @@ export default async function AportesPage() {
                   </span>
                 </td>
                 <td style={{ padding: '14px 16px' }}>
-                  <AporteActions id={a.id} status={a.status} />
+                  <AporteActions id={a.id} status={a.status} voucherUrl={a.voucherUrl} />
                 </td>
               </tr>
             ))}

@@ -18,6 +18,8 @@ export async function createPayPeriod(data: {
   otherAddNote?: string
   deductions: string
   deductionNote?: string
+  healthAmount?: string
+  pensionAmount?: string
   status: string
   paidAt?: string
   notes?: string
@@ -30,6 +32,8 @@ export async function createPayPeriod(data: {
   const bonus = parseFloat(data.bonus) || 0
   const otherAdd = parseFloat(data.otherAdd) || 0
   const deductions = parseFloat(data.deductions) || 0
+  const healthAmount = data.healthAmount ? parseFloat(data.healthAmount) || null : null
+  const pensionAmount = data.pensionAmount ? parseFloat(data.pensionAmount) || null : null
   const netPay = baseSalary + conectividad + tools + bonus + otherAdd - deductions
 
   const mesNombre = MESES[month - 1]
@@ -61,6 +65,8 @@ export async function createPayPeriod(data: {
       otherAddNote: data.otherAddNote || null,
       deductions,
       deductionNote: data.deductionNote || null,
+      healthAmount,
+      pensionAmount,
       netPay,
       status: data.status,
       paidAt: data.paidAt ? new Date(data.paidAt) : null,

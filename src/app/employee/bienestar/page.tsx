@@ -1,7 +1,11 @@
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { toggleInscripcion } from '@/app/actions/bienestar'
-import { Heart, Users, Activity, Brain, CheckCircle2 } from 'lucide-react'
+import { Heart, Users, Activity, Brain, CheckCircle2, CalendarClock, MapPin } from 'lucide-react'
+
+function formatDateTime(d: Date) {
+  return d.toLocaleString('es-CO', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+}
 
 const CATEGORY_INFO: Record<string, { label: string; icon: any; bg: string; color: string }> = {
   PSICOLOGIA:       { label: 'Psicología',       icon: Brain,    bg: '#EDE9FE', color: '#4429A6' },
@@ -43,16 +47,16 @@ export default async function EmployeeBienestarPage() {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, marginBottom: 32 }}>
-        <div style={{ background: 'linear-gradient(135deg, #4429A6 0%, #F2421B 100%)', borderRadius: 16, padding: 24, color: 'white' }}>
+        <div style={{ background: 'linear-gradient(135deg, #4429A6 0%, #7F71D9 100%)', borderRadius: 16, padding: 24, color: 'white' }}>
           <p style={{ fontSize: 12, opacity: 0.75, marginBottom: 8, fontWeight: 500 }}>Programas disponibles</p>
           <p style={{ fontSize: 32, fontWeight: 800 }}>{programas.length}</p>
         </div>
         <div style={{ background: 'white', borderRadius: 16, padding: 24, border: '1px solid #EFEFEF' }}>
-          <p style={{ color: '#A2A2A2', fontSize: 12, marginBottom: 8, fontWeight: 500 }}>Mis inscripciones</p>
+          <p style={{ color: '#A2A2A2', fontSize: 12, marginBottom: 8, fontWeight: 500 }}>Asistencias confirmadas</p>
           <p style={{ color: '#0F1026', fontSize: 32, fontWeight: 800 }}>{inscritoCount}</p>
         </div>
         <div style={{ background: 'white', borderRadius: 16, padding: 24, border: '1px solid #EFEFEF' }}>
-          <p style={{ color: '#A2A2A2', fontSize: 12, marginBottom: 8, fontWeight: 500 }}>Por inscribirte</p>
+          <p style={{ color: '#A2A2A2', fontSize: 12, marginBottom: 8, fontWeight: 500 }}>Por confirmar</p>
           <p style={{ color: '#0F1026', fontSize: 32, fontWeight: 800 }}>{programas.length - inscritoCount}</p>
         </div>
       </div>
@@ -100,14 +104,21 @@ export default async function EmployeeBienestarPage() {
                     Proveedor: <span style={{ color: '#0F1026', fontWeight: 600 }}>{prog.provider}</span>
                   </p>
                 )}
-                {prog.schedule && (
-                  <p style={{ fontSize: 12, color: '#A2A2A2' }}>
-                    Horario: <span style={{ color: '#0F1026', fontWeight: 600 }}>{prog.schedule}</span>
+                {prog.eventDate && (
+                  <p style={{ fontSize: 12, color: '#A2A2A2', display: 'flex', alignItems: 'center', gap: 5, textTransform: 'capitalize' }}>
+                    <CalendarClock size={12} color="#4429A6" />
+                    <span style={{ color: '#0F1026', fontWeight: 600 }}>{formatDateTime(prog.eventDate)}</span>
+                  </p>
+                )}
+                {prog.location && (
+                  <p style={{ fontSize: 12, color: '#A2A2A2', display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <MapPin size={12} color="#4429A6" />
+                    <span style={{ color: '#0F1026', fontWeight: 600 }}>{prog.location}</span>
                   </p>
                 )}
                 <p style={{ fontSize: 12, color: '#A2A2A2', display: 'flex', alignItems: 'center', gap: 4 }}>
                   <Users size={12} />
-                  {prog._count.inscripciones} inscritos
+                  {prog._count.inscripciones} confirmados
                   {prog.capacity ? ` de ${prog.capacity}` : ''}
                 </p>
               </div>
@@ -127,7 +138,7 @@ export default async function EmployeeBienestarPage() {
                     transition: 'all 0.15s',
                   }}
                 >
-                  {inscrito ? 'Cancelar inscripción' : lleno ? 'Sin cupos' : 'Inscribirme'}
+                  {inscrito ? 'Cancelar asistencia' : lleno ? 'Sin cupos' : 'Confirmar asistencia'}
                 </button>
               </form>
             </div>

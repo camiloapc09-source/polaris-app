@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { CheckCircle, Trash2 } from 'lucide-react'
+import { CheckCircle, Trash2, ExternalLink } from 'lucide-react'
 import { markAportePaid, deleteAporte } from '@/app/actions/aportes'
 
-export function AporteActions({ id, status }: { id: string; status: string }) {
+export function AporteActions({ id, status, voucherUrl }: { id: string; status: string; voucherUrl?: string | null }) {
   const [loading, setLoading] = useState(false)
 
   async function handlePaid() {
@@ -22,6 +22,23 @@ export function AporteActions({ id, status }: { id: string; status: string }) {
 
   return (
     <div style={{ display: 'flex', gap: 8 }}>
+      {voucherUrl && (
+        <a
+          href={voucherUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Ver comprobante"
+          style={{
+            background: '#F0EDFF', color: '#4429A6',
+            border: 'none', borderRadius: 8,
+            padding: '6px 10px', cursor: 'pointer',
+            display: 'flex', alignItems: 'center',
+            textDecoration: 'none',
+          }}
+        >
+          <ExternalLink size={13} />
+        </a>
+      )}
       {status === 'PENDING' && (
         <button
           onClick={handlePaid}

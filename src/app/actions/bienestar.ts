@@ -9,7 +9,8 @@ export async function createPrograma(data: {
   category: string
   description?: string
   provider?: string
-  schedule?: string
+  eventDate?: string
+  location?: string
   capacity?: string
   companyId: string
 }) {
@@ -19,7 +20,8 @@ export async function createPrograma(data: {
       category: data.category,
       description: data.description || null,
       provider: data.provider || null,
-      schedule: data.schedule || null,
+      eventDate: data.eventDate ? new Date(data.eventDate) : null,
+      location: data.location || null,
       capacity: data.capacity ? parseInt(data.capacity) : null,
       companyId: data.companyId,
     },
@@ -55,8 +57,10 @@ export async function toggleInscripcion(programaId: string) {
     })
   } else {
     await prisma.inscripcionBienestar.create({
-      data: { programaId, employeeId },
+      data: { programaId, employeeId, status: 'CONFIRMADO', confirmedAt: new Date() },
     })
   }
   revalidatePath('/employee/bienestar')
+  revalidatePath('/admin/bienestar')
+  revalidatePath('/client/bienestar')
 }

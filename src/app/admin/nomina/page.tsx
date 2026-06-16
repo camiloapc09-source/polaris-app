@@ -29,7 +29,7 @@ export default async function NominaAdminPage() {
       </div>
 
       <div className="grid grid-cols-3 gap-6 mb-8">
-        <div className="card bg-brand-gradient text-white border-0">
+        <div className="card text-white border-0" style={{ background: 'linear-gradient(135deg, #4429A6 0%, #7F71D9 100%)' }}>
           <p className="text-white/70 text-sm">Total pagado</p>
           <p className="text-2xl font-bold mt-1">{formatCOP(totalPaid)}</p>
         </div>

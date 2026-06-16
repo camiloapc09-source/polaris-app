@@ -68,6 +68,8 @@ export function NuevoNominaForm({ employees }: { employees: EmployeeOption[] }) 
   const [otherAddNote, setOtherAddNote] = useState('')
   const [deductions, setDeductions] = useState(0)
   const [deductionNote, setDeductionNote] = useState('')
+  const [healthAmount, setHealthAmount] = useState(0)
+  const [pensionAmount, setPensionAmount] = useState(0)
   const [status, setStatus] = useState('PAID')
   const [paidAt, setPaidAt] = useState(today.toISOString().split('T')[0])
   const [notes, setNotes] = useState('')
@@ -79,6 +81,8 @@ export function NuevoNominaForm({ employees }: { employees: EmployeeOption[] }) 
     setBaseSalary(emp.salary)
     setConectividad(quincena === '2' ? emp.conectividadDefault : 0)
     setTools(quincena === '2' ? emp.toolsDefault : 0)
+    setHealthAmount(0)
+    setPensionAmount(0)
   }, [employeeId, quincena])
 
   const netPay = baseSalary + conectividad + tools + bonus + otherAdd - deductions
@@ -99,6 +103,8 @@ export function NuevoNominaForm({ employees }: { employees: EmployeeOption[] }) 
       otherAddNote,
       deductions: deductions.toString(),
       deductionNote,
+      healthAmount: healthAmount > 0 ? healthAmount.toString() : undefined,
+      pensionAmount: pensionAmount > 0 ? pensionAmount.toString() : undefined,
       status,
       paidAt: status === 'PAID' ? paidAt : undefined,
       notes,
@@ -317,7 +323,40 @@ export function NuevoNominaForm({ employees }: { employees: EmployeeOption[] }) 
               </div>
             </div>
 
-            {/* Sección 4: Estado del pago */}
+            {/* Sección 4: Aportes sociales */}
+            <div style={{ background: 'white', borderRadius: 16, padding: 28, border: '1px solid #EFEFEF' }}>
+              <span style={sectionLabel}>Aportes Sociales <span style={{ fontWeight: 400, textTransform: 'none', fontSize: 10, color: '#BBBBBB' }}>— opcional, aparece en la colilla</span></span>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label style={labelStyle}>Salud (EPS)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={healthAmount}
+                    onChange={e => setHealthAmount(parseFloat(e.target.value) || 0)}
+                    style={inputStyle}
+                  />
+                </div>
+                <div>
+                  <label style={labelStyle}>Pensión</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={pensionAmount}
+                    onChange={e => setPensionAmount(parseFloat(e.target.value) || 0)}
+                    style={inputStyle}
+                  />
+                </div>
+              </div>
+              {(healthAmount > 0 || pensionAmount > 0) && (
+                <div style={{ marginTop: 12, padding: '10px 14px', background: '#F8F7FF', borderRadius: 10, fontSize: 12, color: '#7F71D9' }}>
+                  Costo total para Kover: <strong>{formatCOP(netPay + healthAmount + pensionAmount)}</strong>
+                  {' '}(neto Justine + aportes)
+                </div>
+              )}
+            </div>
+
+            {/* Sección 5: Estado del pago */}
             <div style={{ background: 'white', borderRadius: 16, padding: 28, border: '1px solid #EFEFEF' }}>
               <span style={sectionLabel}>Estado del pago</span>
 
@@ -393,10 +432,12 @@ export function NuevoNominaForm({ employees }: { employees: EmployeeOption[] }) 
                   ...(bonus > 0 ? [{ label: 'Bono', value: bonus }] : []),
                   ...(otherAdd > 0 ? [{ label: otherAddNote || 'Otro concepto', value: otherAdd }] : []),
                   ...(deductions > 0 ? [{ label: 'Deducciones', value: -deductions }] : []),
+                  ...(healthAmount > 0 ? [{ label: 'Salud (EPS)', value: healthAmount, extra: true }] : []),
+                  ...(pensionAmount > 0 ? [{ label: 'Pensión', value: pensionAmount, extra: true }] : []),
                 ].map(item => (
                   <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: 13, color: '#888' }}>{item.label}</span>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: item.value < 0 ? '#E53E3E' : '#0F1026' }}>
+                    <span style={{ fontSize: 13, color: (item as any).extra ? '#7F71D9' : '#888' }}>{item.label}</span>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: item.value < 0 ? '#E53E3E' : (item as any).extra ? '#7F71D9' : '#0F1026' }}>
                       {item.value < 0 ? '−' : ''}{formatCOP(Math.abs(item.value))}
                     </span>
                   </div>

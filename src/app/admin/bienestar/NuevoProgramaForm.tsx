@@ -37,7 +37,8 @@ export function NuevoProgramaForm({ companies }: { companies: Company[] }) {
     category: 'PSICOLOGIA',
     description: '',
     provider: '',
-    schedule: '',
+    eventDate: '',
+    location: '',
     capacity: '',
     companyId: companies[0]?.id || '',
   })
@@ -53,7 +54,7 @@ export function NuevoProgramaForm({ companies }: { companies: Company[] }) {
     try {
       await createPrograma(form)
       setOpen(false)
-      setForm({ title: '', category: 'PSICOLOGIA', description: '', provider: '', schedule: '', capacity: '', companyId: companies[0]?.id || '' })
+      setForm({ title: '', category: 'PSICOLOGIA', description: '', provider: '', eventDate: '', location: '', capacity: '', companyId: companies[0]?.id || '' })
     } catch (err: any) {
       setError(err.message || 'Error al crear programa')
     } finally {
@@ -73,7 +74,7 @@ export function NuevoProgramaForm({ companies }: { companies: Company[] }) {
         }}
       >
         <Plus size={16} />
-        Nuevo programa
+        Programar actividad
       </button>
 
       {open && (
@@ -83,7 +84,7 @@ export function NuevoProgramaForm({ companies }: { companies: Company[] }) {
         }}>
           <div style={{ background: 'white', borderRadius: 20, width: '100%', maxWidth: 500, maxHeight: '90vh', overflowY: 'auto', padding: 32 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-              <h2 style={{ fontSize: 20, fontWeight: 800, color: '#0F1026' }}>Nuevo Programa</h2>
+              <h2 style={{ fontSize: 20, fontWeight: 800, color: '#0F1026' }}>Programar actividad</h2>
               <button onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}>
                 <X size={20} />
               </button>
@@ -137,9 +138,15 @@ export function NuevoProgramaForm({ companies }: { companies: Company[] }) {
                 </div>
               </div>
 
-              <div>
-                <label style={labelStyle}>Horario / frecuencia</label>
-                <input style={inputStyle} value={form.schedule} onChange={(e) => set('schedule', e.target.value)} placeholder="Ej: Lunes y miércoles 6pm, Martes 7am..." />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label style={labelStyle}>Fecha y hora</label>
+                  <input style={inputStyle} type="datetime-local" value={form.eventDate} onChange={(e) => set('eventDate', e.target.value)} />
+                </div>
+                <div>
+                  <label style={labelStyle}>Lugar</label>
+                  <input style={inputStyle} value={form.location} onChange={(e) => set('location', e.target.value)} placeholder="Sede, dirección o enlace virtual" />
+                </div>
               </div>
 
               {error && (
@@ -155,7 +162,7 @@ export function NuevoProgramaForm({ companies }: { companies: Company[] }) {
                 </button>
                 <button type="submit" disabled={loading}
                   style={{ flex: 1, background: '#4429A6', border: 'none', borderRadius: 12, padding: '12px', fontSize: 13, fontWeight: 600, color: 'white', cursor: 'pointer', opacity: loading ? 0.6 : 1 }}>
-                  {loading ? 'Creando...' : 'Crear programa'}
+                  {loading ? 'Creando...' : 'Programar actividad'}
                 </button>
               </div>
             </form>

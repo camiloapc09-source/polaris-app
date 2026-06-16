@@ -41,6 +41,7 @@ model Company {
   incomes            Income[]
   serviceInvoices    ServiceInvoice[]
   programasBienestar ProgramaBienestar[]
+  clientPayments     ClientPayment[]
 }
 
 model Employee {
@@ -87,6 +88,8 @@ model PayPeriod {
   otherAddNote  String?
   deductions    Float    @default(0)
   deductionNote String?
+  healthAmount  Float?
+  pensionAmount Float?
   netPay        Float
   status        String   @default("DRAFT")
   paidAt        DateTime?
@@ -128,20 +131,46 @@ model Income {
   supportUrl  String?
   createdAt   DateTime @default(now())
 
+  company       Company        @relation(fields: [companyId], references: [id])
+  companyId     String
+  clientPayment ClientPayment?
+}
+
+model ClientPayment {
+  id          String    @id @default(cuid())
+  amountUSD   Float
+  date        DateTime
+  description String?
+  evidenceUrl String?
+  status      String    @default("PENDING")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
   company   Company @relation(fields: [companyId], references: [id])
   companyId String
+
+  incomeId String? @unique
+  income   Income? @relation(fields: [incomeId], references: [id])
 }
 
 model ServiceInvoice {
-  id          String   @id @default(cuid())
-  period      String
-  baseAmount  Float
-  iva         Float    @default(0)
-  total       Float
-  invoiceRef  String?
-  status      String   @default("PENDING")
-  paidAt      DateTime?
-  createdAt   DateTime @default(now())
+  id              String    @id @default(cuid())
+  invoiceNumber   String?
+  invoiceDate     DateTime?
+  period          String
+  lineItemsJson   Json?
+  baseAmount      Float
+  iva             Float     @default(0)
+  total           Float
+  invoiceRef      String?
+  status          String    @default("PENDING")
+  sentAmountUSD   Float?
+  sentEvidenceUrl String?
+  sentAt          DateTime?
+  receivedAmountCOP Float?
+  receivedAt      DateTime?
+  paidAt          DateTime?
+  createdAt       DateTime  @default(now())
 
   company   Company @relation(fields: [companyId], references: [id])
   companyId String
@@ -179,16 +208,18 @@ model CertificadoLaboral {
 }
 
 model ExamenMedico {
-  id           String   @id @default(cuid())
-  type         String   @default("PERIODICO") // INGRESO, PERIODICO, EGRESO
-  examDate     DateTime
-  nextExamDate DateTime?
-  clinic       String?
-  result       String   @default("APTO") // APTO, APTO_CON_RESTRICCIONES, NO_APTO, PENDIENTE
-  evidenceUrl  String?
-  notes        String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id            String    @id @default(cuid())
+  type          String    @default("PERIODICO") // INGRESO, PERIODICO, EGRESO
+  status        String    @default("PROGRAMADO") // PROGRAMADO, CITA_AGENDADA, REALIZADO
+  examDate      DateTime? // fecha en que efectivamente se realizó
+  appointmentAt DateTime? // fecha y hora de la cita que agenda el empleado con su EPS
+  nextExamDate  DateTime?
+  clinic        String?
+  result        String    @default("PENDIENTE") // APTO, APTO_CON_RESTRICCIONES, NO_APTO, PENDIENTE
+  evidenceUrl   String?   // historia clínica / certificado médico
+  notes         String?   // instrucciones de Star Shine al programar
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   employee   Employee @relation(fields: [employeeId], references: [id])
   employeeId String
@@ -201,6 +232,8 @@ model ProgramaBienestar {
   description String?
   provider    String?
   schedule    String?
+  eventDate   DateTime? // cuándo será la actividad / charla
+  location    String?   // dónde será (lugar o enlace virtual)
   capacity    Int?
   isActive    Boolean  @default(true)
   imageUrl    String?
@@ -214,9 +247,10 @@ model ProgramaBienestar {
 }
 
 model InscripcionBienestar {
-  id         String   @id @default(cuid())
-  status     String   @default("INSCRITO") // INSCRITO, COMPLETADO, CANCELADO
-  createdAt  DateTime @default(now())
+  id          String    @id @default(cuid())
+  status      String    @default("CONFIRMADO") // CONFIRMADO, COMPLETADO, CANCELADO
+  confirmedAt DateTime? // cuándo el empleado confirmó asistencia
+  createdAt   DateTime  @default(now())
 
   programa   ProgramaBienestar @relation(fields: [programaId], references: [id])
   programaId String

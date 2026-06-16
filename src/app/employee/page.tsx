@@ -1,7 +1,7 @@
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { formatCOP, formatDate } from '@/lib/utils'
-import { FileText, HeartPulse, Calendar, DollarSign } from 'lucide-react'
+import { FileText, HeartPulse } from 'lucide-react'
 import Link from 'next/link'
 
 export default async function EmployeeDashboard() {
@@ -30,31 +30,36 @@ export default async function EmployeeDashboard() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-brand-navy">
-          Hola, {employee?.firstName} 👋
+      <div style={{ marginBottom: 36 }}>
+        <p style={{ color: '#A2A2A2', fontSize: 11, fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 6 }}>
+          Portal de Empleado · Polaris
+        </p>
+        <h1 style={{ color: '#0F1026', fontSize: 32, fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1 }}>
+          Hola, {employee?.firstName}
         </h1>
-        <p className="text-gray-500 mt-1">{employee?.position} · {employee?.company?.name}</p>
+        <p style={{ color: '#BBBBBB', fontSize: 14, marginTop: 6 }}>
+          {employee?.position} · {employee?.company?.name}
+        </p>
       </div>
 
       {/* Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="card bg-brand-gradient text-white border-0">
-          <p className="text-white/70 text-sm mb-1">Último pago neto</p>
-          <p className="text-3xl font-bold">{lastPay ? formatCOP(lastPay.netPay) : '—'}</p>
-          <p className="text-white/60 text-xs mt-1">{lastPay?.periodLabel || 'Sin pagos aún'}</p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, marginBottom: 32 }}>
+        <div style={{ background: 'linear-gradient(135deg, #4429A6 0%, #7F71D9 100%)', borderRadius: 16, padding: 24, color: 'white' }}>
+          <p style={{ fontSize: 12, opacity: 0.75, marginBottom: 8, fontWeight: 500 }}>Último pago neto</p>
+          <p style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-0.02em' }}>{lastPay ? formatCOP(lastPay.netPay) : '—'}</p>
+          <p style={{ fontSize: 11, opacity: 0.6, marginTop: 6 }}>{lastPay?.periodLabel || 'Sin pagos aún'}</p>
         </div>
-        <div className="card">
-          <p className="text-gray-500 text-sm mb-1">Salario base</p>
-          <p className="text-2xl font-bold text-brand-navy">{formatCOP(employee?.salary || 0)}</p>
-          <p className="text-gray-400 text-xs mt-1">Mensual</p>
+        <div style={{ background: 'white', borderRadius: 16, padding: 24, border: '1px solid #EFEFEF' }}>
+          <p style={{ color: '#A2A2A2', fontSize: 12, marginBottom: 8, fontWeight: 500 }}>Salario base</p>
+          <p style={{ color: '#0F1026', fontSize: 26, fontWeight: 800, letterSpacing: '-0.02em' }}>{formatCOP(employee?.salary || 0)}</p>
+          <p style={{ color: '#BBBBBB', fontSize: 11, marginTop: 6 }}>Mensual</p>
         </div>
-        <div className="card">
-          <p className="text-gray-500 text-sm mb-1">Fecha de inicio</p>
-          <p className="text-2xl font-bold text-brand-navy">
+        <div style={{ background: 'white', borderRadius: 16, padding: 24, border: '1px solid #EFEFEF' }}>
+          <p style={{ color: '#A2A2A2', fontSize: 12, marginBottom: 8, fontWeight: 500 }}>Fecha de inicio</p>
+          <p style={{ color: '#0F1026', fontSize: 22, fontWeight: 800, letterSpacing: '-0.02em' }}>
             {employee?.startDate ? formatDate(employee.startDate) : '—'}
           </p>
-          <p className="text-gray-400 text-xs mt-1">Vinculación</p>
+          <p style={{ color: '#BBBBBB', fontSize: 11, marginTop: 6 }}>Vinculación</p>
         </div>
       </div>
 

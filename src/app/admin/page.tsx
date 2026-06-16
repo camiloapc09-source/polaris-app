@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/db'
 import { StatCard } from '@/components/dashboard/StatCard'
 import { formatCOP } from '@/lib/utils'
-import { DollarSign, Users, TrendingUp, FileText, AlertCircle } from 'lucide-react'
+import { DollarSign, Users, TrendingUp, FileText } from 'lucide-react'
 import Link from 'next/link'
 
 export default async function AdminDashboard() {
@@ -51,27 +51,22 @@ export default async function AdminDashboard() {
           title="Saldo Disponible"
           value={formatCOP(balance)}
           subtitle="Total ingresos - egresos"
-          icon={DollarSign}
           accent={true}
         />
         <StatCard
           title="Total Ingresos"
           value={formatCOP(totalIn)}
           subtitle="Pagos recibidos de Kover"
-          icon={TrendingUp}
-          trendUp={true}
         />
         <StatCard
           title="Empleados Activos"
           value={employeeCount.toString()}
           subtitle="En Colombia"
-          icon={Users}
         />
         <StatCard
           title="Incapacidades Pendientes"
           value={pendingLeaves.toString()}
           subtitle="Requieren revisión"
-          icon={AlertCircle}
         />
       </div>
 

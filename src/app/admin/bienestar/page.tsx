@@ -1,7 +1,11 @@
 import { prisma } from '@/lib/db'
 import { NuevoProgramaForm } from './NuevoProgramaForm'
 import { toggleProgramaStatus } from '@/app/actions/bienestar'
-import { Heart, Users, Activity, Brain } from 'lucide-react'
+import { Heart, Users, Activity, Brain, CalendarClock, MapPin } from 'lucide-react'
+
+function formatDateTime(d: Date) {
+  return d.toLocaleString('es-CO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+}
 
 const CATEGORY_INFO: Record<string, { label: string; icon: any; bg: string; color: string }> = {
   PSICOLOGIA:       { label: 'Psicología',       icon: Brain,    bg: '#EDE9FE', color: '#4429A6' },
@@ -41,7 +45,7 @@ export default async function AdminBienestarPage() {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, marginBottom: 32 }}>
-        <div style={{ background: 'linear-gradient(135deg, #4429A6 0%, #F2421B 100%)', borderRadius: 16, padding: 24, color: 'white' }}>
+        <div style={{ background: 'linear-gradient(135deg, #4429A6 0%, #7F71D9 100%)', borderRadius: 16, padding: 24, color: 'white' }}>
           <p style={{ fontSize: 12, opacity: 0.75, marginBottom: 8, fontWeight: 500 }}>Total programas</p>
           <p style={{ fontSize: 32, fontWeight: 800 }}>{programas.length}</p>
         </div>
@@ -105,9 +109,16 @@ export default async function AdminBienestarPage() {
                     Proveedor: <span style={{ color: '#0F1026', fontWeight: 600 }}>{prog.provider}</span>
                   </p>
                 )}
-                {prog.schedule && (
-                  <p style={{ fontSize: 12, color: '#A2A2A2' }}>
-                    Horario: <span style={{ color: '#0F1026', fontWeight: 600 }}>{prog.schedule}</span>
+                {prog.eventDate && (
+                  <p style={{ fontSize: 12, color: '#A2A2A2', display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <CalendarClock size={12} color="#4429A6" />
+                    <span style={{ color: '#0F1026', fontWeight: 600 }}>{formatDateTime(prog.eventDate)}</span>
+                  </p>
+                )}
+                {prog.location && (
+                  <p style={{ fontSize: 12, color: '#A2A2A2', display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <MapPin size={12} color="#4429A6" />
+                    <span style={{ color: '#0F1026', fontWeight: 600 }}>{prog.location}</span>
                   </p>
                 )}
                 <p style={{ fontSize: 12, color: '#A2A2A2' }}>
@@ -119,7 +130,7 @@ export default async function AdminBienestarPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <Users size={14} color="#A2A2A2" />
                   <span style={{ fontSize: 12, color: '#888' }}>
-                    {prog.inscripciones.length} inscritos
+                    {prog.inscripciones.length} confirmados
                     {prog.capacity ? ` / ${prog.capacity} cupos` : ''}
                   </span>
                 </div>

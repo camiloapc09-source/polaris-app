@@ -14,12 +14,13 @@ export default async function FacturasPage() {
   ])
 
   const totalPagado = facturas.filter(f => f.status === 'PAID').reduce((s, f) => s + f.total, 0)
-  const totalPend   = facturas.filter(f => f.status === 'PENDING').reduce((s, f) => s + f.total, 0)
+  const totalPend   = facturas.filter(f => f.status !== 'PAID').reduce((s, f) => s + f.total, 0)
 
   const monthLabel = (period: string) => {
     const [y, m] = period.split('-')
-    if (!y || !m) return period
-    return new Date(parseInt(y), parseInt(m) - 1).toLocaleString('es-CO', { month: 'long', year: 'numeric' })
+    const yn = parseInt(y), mn = parseInt(m)
+    if (isNaN(yn) || isNaN(mn) || mn < 1 || mn > 12) return period
+    return new Date(yn, mn - 1).toLocaleString('es-CO', { month: 'long', year: 'numeric' })
   }
 
   return (
@@ -42,7 +43,7 @@ export default async function FacturasPage() {
 
       {/* Stats */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, marginBottom: 32 }}>
-        <div style={{ background: 'linear-gradient(135deg, #4429A6 0%, #F2421B 100%)', borderRadius: 16, padding: 24, color: 'white' }}>
+        <div style={{ background: 'linear-gradient(135deg, #4429A6 0%, #7F71D9 100%)', borderRadius: 16, padding: 24, color: 'white' }}>
           <p style={{ fontSize: 12, opacity: 0.75, marginBottom: 8, fontWeight: 500 }}>Total facturado</p>
           <p style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.02em', wordBreak: 'break-all' }}>
             {formatCOP(totalPagado + totalPend)}
@@ -122,14 +123,19 @@ export default async function FacturasPage() {
                     display: 'inline-flex', alignItems: 'center',
                     padding: '4px 12px', borderRadius: 99,
                     fontSize: 11, fontWeight: 600,
-                    background: f.status === 'PAID' ? '#dcfce7' : '#fef9c3',
-                    color:      f.status === 'PAID' ? '#15803d' : '#a16207',
+                    background: f.status === 'PAID' ? '#dcfce7' : f.status === 'SENT' ? '#dbeafe' : '#fef9c3',
+                    color:      f.status === 'PAID' ? '#15803d' : f.status === 'SENT' ? '#1d4ed8' : '#a16207',
                   }}>
-                    {f.status === 'PAID' ? 'Cobrada' : 'Pendiente'}
+                    {f.status === 'PAID' ? 'Cobrada' : f.status === 'SENT' ? 'Enviada' : 'Pendiente'}
                   </span>
                 </td>
                 <td style={{ padding: '14px 16px' }}>
-                  <FacturaActions id={f.id} status={f.status} />
+                  <FacturaActions
+                    id={f.id}
+                    status={f.status}
+                    sentEvidenceUrl={f.sentEvidenceUrl}
+                    sentAmountUSD={f.sentAmountUSD}
+                  />
                 </td>
               </tr>
             ))}
