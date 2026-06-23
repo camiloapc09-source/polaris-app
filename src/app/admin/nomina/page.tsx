@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/db'
 import { formatCOP, formatDate } from '@/lib/utils'
-import { DollarSign, Plus } from 'lucide-react'
+import { FileText, Plus } from 'lucide-react'
 import Link from 'next/link'
 
 export default async function NominaAdminPage() {
@@ -43,45 +43,67 @@ export default async function NominaAdminPage() {
         </div>
       </div>
 
-      <div className="card">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-gray-100">
-              <th className="text-left py-3 px-4 text-xs font-bold text-gray-400 uppercase">Empleado</th>
-              <th className="text-left py-3 px-4 text-xs font-bold text-gray-400 uppercase">Periodo</th>
-              <th className="text-left py-3 px-4 text-xs font-bold text-gray-400 uppercase">Detalles</th>
-              <th className="text-right py-3 px-4 text-xs font-bold text-gray-400 uppercase">Neto</th>
-              <th className="text-center py-3 px-4 text-xs font-bold text-gray-400 uppercase">Estado</th>
-            </tr>
-          </thead>
-          <tbody>
-            {payPeriods.map((p) => (
-              <tr key={p.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                <td className="py-4 px-4">
-                  <p className="font-semibold text-sm text-brand-navy">{p.employee.firstName} {p.employee.lastName}</p>
-                  <p className="text-xs text-gray-400">{p.employee.company.name}</p>
-                </td>
-                <td className="py-4 px-4">
-                  <p className="text-sm font-medium">{p.periodLabel}</p>
-                  {p.paidAt && <p className="text-xs text-gray-400">Pagado: {formatDate(p.paidAt)}</p>}
-                </td>
-                <td className="py-4 px-4 text-xs text-gray-500 space-y-1">
-                  <p>Base: {formatCOP(p.baseSalary)}</p>
-                  {p.conectividad > 0 && <p>Conectividad: {formatCOP(p.conectividad)}</p>}
-                  {p.tools > 0 && <p>Herramientas: {formatCOP(p.tools)}</p>}
-                </td>
-                <td className="py-4 px-4 text-right">
-                  <p className="font-bold text-brand-purple">{formatCOP(p.netPay)}</p>
-                </td>
-                <td className="py-4 px-4 text-center">
-                  <span className={p.status === 'PAID' ? 'badge-paid' : 'badge-pending'}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {payPeriods.map((p) => {
+          const chips = [
+            { label: 'Salario base', value: p.baseSalary },
+            ...(p.conectividad > 0 ? [{ label: 'Conectividad', value: p.conectividad }] : []),
+            ...(p.tools > 0 ? [{ label: 'Herramientas', value: p.tools }] : []),
+            ...(p.bonus > 0 ? [{ label: 'Bono', value: p.bonus }] : []),
+            ...(p.otherAdd > 0 ? [{ label: p.otherAddNote || 'Otro', value: p.otherAdd }] : []),
+          ]
+          return (
+            <div key={p.id} style={{ background: 'white', borderRadius: 16, padding: 24, border: '1px solid #EFEFEF' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 12, background: '#F0EDFF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <FileText size={20} color="#4429A6" />
+                  </div>
+                  <div>
+                    <p style={{ fontSize: 15, fontWeight: 700, color: '#0F1026' }}>
+                      {p.employee.firstName} {p.employee.lastName}
+                      <span style={{ fontSize: 12, fontWeight: 500, color: '#888' }}> · {p.employee.company.name}</span>
+                    </p>
+                    <p style={{ fontSize: 12, color: '#888', marginTop: 2 }}>
+                      {p.periodLabel}
+                      {p.paidAt && <> — Pagado: {formatDate(p.paidAt)}</>}
+                    </p>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+                  <div style={{ textAlign: 'right' }}>
+                    <p style={{ fontSize: 11, color: '#A2A2A2', marginBottom: 2 }}>Neto empleada</p>
+                    <p style={{ fontSize: 17, fontWeight: 800, color: '#4429A6' }}>{formatCOP(p.netPay)}</p>
+                  </div>
+                  <span style={{
+                    padding: '4px 12px', borderRadius: 99, fontSize: 11, fontWeight: 600,
+                    background: p.status === 'PAID' ? '#dcfce7' : '#fef9c3',
+                    color: p.status === 'PAID' ? '#15803d' : '#a16207',
+                  }}>
                     {p.status === 'PAID' ? 'Pagado' : 'Pendiente'}
                   </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                </div>
+              </div>
+
+              {/* Desglose */}
+              <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid #F5F5F5', display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                {chips.map(item => (
+                  <div key={item.label} style={{ background: '#F5F5F5', borderRadius: 10, padding: '7px 12px' }}>
+                    <p style={{ fontSize: 10, color: '#A2A2A2', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{item.label}</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: '#0F1026', marginTop: 2 }}>{formatCOP(item.value)}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )
+        })}
+        {payPeriods.length === 0 && (
+          <div style={{ background: 'white', borderRadius: 16, padding: '48px 20px', border: '1px solid #EFEFEF', textAlign: 'center' }}>
+            <FileText size={36} style={{ margin: '0 auto 12px', color: '#E8E8E8' }} />
+            <p style={{ color: '#BBBBBB', fontSize: 14 }}>No hay pagos registrados aún</p>
+          </div>
+        )}
       </div>
     </div>
   )

@@ -104,8 +104,8 @@ export default async function FacturasPage() {
                   {monthLabel(f.period)}
                 </td>
                 <td style={{ padding: '14px 16px', fontSize: 13 }}>
-                  {f.invoiceRef
-                    ? <span style={{ background: '#F0EDFF', color: '#4429A6', fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 99 }}>{f.invoiceRef}</span>
+                  {f.invoiceNumber
+                    ? <span style={{ background: '#F0EDFF', color: '#4429A6', fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 99 }}>{f.invoiceNumber}</span>
                     : <span style={{ color: '#D0D0D0' }}>—</span>
                   }
                 </td>

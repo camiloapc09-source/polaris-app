@@ -8,7 +8,6 @@ export default async function AdminDashboard() {
   const [
     totalIncomes,
     totalPayroll,
-    totalService,
     totalContribs,
     employeeCount,
     pendingLeaves,
@@ -16,7 +15,6 @@ export default async function AdminDashboard() {
   ] = await Promise.all([
     prisma.income.aggregate({ _sum: { amountCOP: true } }),
     prisma.payPeriod.aggregate({ _sum: { netPay: true } }),
-    prisma.serviceInvoice.aggregate({ _sum: { total: true } }),
     prisma.socialContribution.aggregate({ _sum: { total: true } }),
     prisma.employee.count({ where: { status: 'ACTIVE' } }),
     prisma.leaveRequest.count({ where: { status: 'PENDING' } }),
@@ -28,7 +26,7 @@ export default async function AdminDashboard() {
   ])
 
   const totalIn = totalIncomes._sum.amountCOP || 0
-  const totalOut = (totalPayroll._sum.netPay || 0) + (totalService._sum.total || 0) + (totalContribs._sum.total || 0)
+  const totalOut = (totalPayroll._sum.netPay || 0) + (totalContribs._sum.total || 0)
   const balance = totalIn - totalOut
 
   return (
@@ -78,7 +76,6 @@ export default async function AdminDashboard() {
             {[
               { label: 'Nómina', value: totalPayroll._sum.netPay || 0, color: 'bg-brand-purple' },
               { label: 'Aportes Sociales', value: totalContribs._sum.total || 0, color: 'bg-brand-purple-light' },
-              { label: 'Servicio Star Shine', value: totalService._sum.total || 0, color: 'bg-brand-orange' },
             ].map((item) => (
               <div key={item.label}>
                 <div className="flex justify-between text-sm mb-1">

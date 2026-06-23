@@ -33,6 +33,7 @@ interface LineItemState {
   period: string
   baseAmount: string
   hasIVA: boolean
+  hasGastos: boolean
 }
 
 interface Company { id: string; name: string }
@@ -43,9 +44,9 @@ function newId() { return Math.random().toString(36).slice(2) }
 
 function initItems(): LineItemState[] {
   return [
-    { id: newId(), description: 'Nómina', subtitle: '', period: '', baseAmount: '', hasIVA: false },
-    { id: newId(), description: 'Herramienta de trabajo', subtitle: '', period: '', baseAmount: '', hasIVA: false },
-    { id: newId(), description: 'Auxilio de conectividad', subtitle: '', period: '', baseAmount: '', hasIVA: false },
+    { id: newId(), description: 'Nómina', subtitle: '', period: '', baseAmount: '', hasIVA: false, hasGastos: true },
+    { id: newId(), description: 'Herramienta de trabajo', subtitle: '', period: '', baseAmount: '', hasIVA: false, hasGastos: true },
+    { id: newId(), description: 'Auxilio de conectividad', subtitle: '', period: '', baseAmount: '', hasIVA: false, hasGastos: true },
   ]
 }
 
@@ -64,7 +65,7 @@ export function NuevaFacturaForm({ companies }: { companies: Company[] }) {
 
   function getCalc(item: LineItemState) {
     const base   = parseFloat(item.baseAmount) || 0
-    const gastos = Math.round(base * 0.04)
+    const gastos = item.hasGastos ? Math.round(base * 0.04) : 0
     const iva    = item.hasIVA ? Math.round(base * 0.19) : 0
     const total  = base + gastos + iva
     return { base, gastos, iva, total }
@@ -79,7 +80,7 @@ export function NuevaFacturaForm({ companies }: { companies: Company[] }) {
   }
 
   function addItem() {
-    setItems(prev => [...prev, { id: newId(), description: '', subtitle: '', period: '', baseAmount: '', hasIVA: false }])
+    setItems(prev => [...prev, { id: newId(), description: '', subtitle: '', period: '', baseAmount: '', hasIVA: false, hasGastos: true }])
   }
 
   function handleClose() {
@@ -270,6 +271,16 @@ export function NuevaFacturaForm({ companies }: { companies: Company[] }) {
                                   style={inputStyle}
                                 />
                               </div>
+
+                              <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 12, color: '#888', marginTop: 18 }}>
+                                <input
+                                  type="checkbox"
+                                  checked={item.hasGastos}
+                                  onChange={e => updateItem(item.id, 'hasGastos', e.target.checked)}
+                                  style={{ accentColor: '#4429A6', width: 14, height: 14 }}
+                                />
+                                <span style={{ fontWeight: 600 }}>4% gastos</span>
+                              </label>
 
                               <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 12, color: '#888', marginTop: 18 }}>
                                 <input
