@@ -265,7 +265,7 @@ export function NuevaFacturaForm({ companies }: { companies: Company[] }) {
                                   type="number"
                                   placeholder="0"
                                   min="0"
-                                  step="1000"
+                                  step="any"
                                   value={item.baseAmount}
                                   onChange={e => updateItem(item.id, 'baseAmount', e.target.value)}
                                   style={inputStyle}

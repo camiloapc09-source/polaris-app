@@ -141,7 +141,7 @@ export function NuevoAporteForm({ employees }: { employees: Employee[] }) {
                         name={f.name}
                         placeholder="0"
                         min="0"
-                        step="100"
+                        step="any"
                         value={f.val}
                         onChange={e => f.set(e.target.value)}
                         style={inputStyle}
@@ -158,7 +158,7 @@ export function NuevoAporteForm({ employees }: { employees: Employee[] }) {
                   name="lateFee"
                   placeholder="0"
                   min="0"
-                  step="100"
+                  step="any"
                   value={lateFee}
                   onChange={e => setLateFee(e.target.value)}
                   style={inputStyle}

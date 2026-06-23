@@ -142,7 +142,7 @@ export function FacturaActions({ id, status, sentEvidenceUrl, sentAmountUSD }: P
                 type="number"
                 placeholder="ej: 1681955"
                 min="1"
-                step="1000"
+                step="any"
                 value={copAmount}
                 onChange={e => setCopAmount(e.target.value)}
                 style={inputStyle}
