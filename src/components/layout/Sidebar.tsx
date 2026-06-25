@@ -1,4 +1,5 @@
 'use client'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
@@ -7,7 +8,7 @@ import {
   LayoutDashboard, Users, DollarSign, TrendingUp,
   FileText, LogOut, Building2, Calendar, Receipt,
   HeartPulse, Stethoscope, Heart, Award, Send,
-  ShieldCheck, UserCog,
+  ShieldCheck, UserCog, Menu, X,
 } from 'lucide-react'
 
 interface NavItem { href: string; label: string; icon: React.ElementType; section?: string }
@@ -55,9 +56,32 @@ export function Sidebar({ role, userName }: SidebarProps) {
   const pathname = usePathname()
   const nav = role === 'ADMIN' ? adminNav : role === 'CLIENT' ? clientNav : employeeNav
   const initial = userName.charAt(0).toUpperCase()
+  const [open, setOpen] = useState(false)
+
+  // Cerrar el menú al navegar a otra página
+  useEffect(() => { setOpen(false) }, [pathname])
 
   return (
-    <aside style={{
+    <>
+      {/* Barra superior (solo móvil) */}
+      <div className="mobile-topbar">
+        <button
+          onClick={() => setOpen(true)}
+          aria-label="Abrir menú"
+          style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', padding: 6, display: 'flex' }}
+        >
+          <Menu size={24} />
+        </button>
+        <StarShineLogo variant="white" width={108} />
+      </div>
+
+      {/* Fondo oscuro al abrir el drawer (solo móvil) */}
+      <div
+        className={`sidebar-overlay${open ? ' sidebar-open' : ''}`}
+        onClick={() => setOpen(false)}
+      />
+
+    <aside className={`sidebar-aside${open ? ' sidebar-open' : ''}`} style={{
       width: 260,
       minHeight: '100vh',
       background: '#0F1026',
@@ -65,6 +89,20 @@ export function Sidebar({ role, userName }: SidebarProps) {
       flexDirection: 'column',
       flexShrink: 0,
     }}>
+
+      {/* Botón cerrar (solo visible dentro del drawer en móvil) */}
+      <button
+        onClick={() => setOpen(false)}
+        aria-label="Cerrar menú"
+        className="drawer-close"
+        style={{
+          position: 'absolute', top: 14, right: 14,
+          background: 'rgba(255,255,255,0.08)', border: 'none', color: 'white',
+          cursor: 'pointer', padding: 6, borderRadius: 8, zIndex: 2,
+        }}
+      >
+        <X size={20} />
+      </button>
 
       {/* Logo */}
       <div style={{ padding: '24px 20px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
@@ -162,5 +200,6 @@ export function Sidebar({ role, userName }: SidebarProps) {
         </button>
       </div>
     </aside>
+    </>
   )
 }

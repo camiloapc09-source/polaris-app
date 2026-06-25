@@ -27,6 +27,78 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* =========================================================
+   Responsive / Mobile layer
+   La app usa estilos inline; estas reglas con !important
+   adaptan layout, grids y sidebar en pantallas pequeñas
+   sin tener que editar cada página.
+   ========================================================= */
+
+/* Contenedor de padding del área principal */
+.app-main-pad { padding: 40px 40px; max-width: 100%; }
+
+/* Topbar móvil, botón cerrar y overlay: ocultos en escritorio */
+.mobile-topbar { display: none; }
+.drawer-close { display: none; }
+.sidebar-overlay { display: none; }
+
+@media (max-width: 900px) {
+  /* Padding reducido + espacio para el topbar fijo */
+  .app-main-pad { padding: 16px 14px 40px; }
+  .app-main { padding-top: 56px; }
+
+  /* Sidebar -> drawer deslizable fuera de pantalla */
+  .sidebar-aside {
+    position: fixed !important;
+    top: 0; left: 0; bottom: 0;
+    z-index: 70;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    box-shadow: 0 0 48px rgba(0,0,0,0.45);
+  }
+  .sidebar-aside.sidebar-open { transform: translateX(0); }
+  .drawer-close { display: flex; }
+
+  /* Barra superior fija con hamburguesa */
+  .mobile-topbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 56px;
+    padding: 0 14px;
+    background: #0F1026;
+    z-index: 50;
+  }
+
+  /* Fondo oscuro al abrir el drawer */
+  .sidebar-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 60;
+  }
+  .sidebar-overlay.sidebar-open { display: block; }
+
+  /* Grids de stats: 4 y 3 columnas -> 2 */
+  [style*="repeat(4, 1fr)"],
+  [style*="repeat(3, 1fr)"] { grid-template-columns: 1fr 1fr !important; }
+
+  /* Splits de dos columnas y paneles laterales -> 1 columna */
+  [style*="1fr 1fr"],
+  [style*="1fr 1fr 1fr"],
+  [style*="2fr 1.2fr 1fr"],
+  [style*="1fr 2fr"],
+  [style*="1fr 360px"],
+  [style*="1fr 100px"] { grid-template-columns: 1fr !important; }
+}
+
+@media (max-width: 540px) {
+  /* En teléfonos pequeños todo a 1 columna */
+  [style*="repeat(4, 1fr)"],
+  [style*="repeat(3, 1fr)"] { grid-template-columns: 1fr !important; }
+}
+
 .btn-primary {
   display: inline-flex;
   align-items: center;

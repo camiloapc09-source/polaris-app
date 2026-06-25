@@ -8,8 +8,8 @@ export async function DashboardLayout({ children }: { children: React.ReactNode 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#F5F5FA' }}>
       <Sidebar role={user?.role || 'EMPLOYEE'} userName={user?.name || 'Usuario'} />
-      <main style={{ flex: 1, minWidth: 0, overflowY: 'auto' }}>
-        <div style={{ padding: '40px 40px', maxWidth: '100%' }}>
+      <main className="app-main" style={{ flex: 1, minWidth: 0, overflowY: 'auto' }}>
+        <div className="app-main-pad">
           {children}
         </div>
       </main>
