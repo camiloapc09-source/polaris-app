@@ -2,6 +2,7 @@ import { prisma } from '@/lib/db'
 import { formatCOP, formatDate } from '@/lib/utils'
 import { FileText, Plus } from 'lucide-react'
 import Link from 'next/link'
+import { NominaActions } from './NominaActions'
 
 export default async function NominaAdminPage() {
   const payPeriods = await prisma.payPeriod.findMany({
@@ -83,6 +84,7 @@ export default async function NominaAdminPage() {
                   }}>
                     {p.status === 'PAID' ? 'Pagado' : 'Pendiente'}
                   </span>
+                  <NominaActions id={p.id} status={p.status} supportUrl={p.supportUrl} />
                 </div>
               </div>
 

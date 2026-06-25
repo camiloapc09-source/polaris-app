@@ -1,13 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { CheckCircle, Trash2, ExternalLink, Upload, X } from 'lucide-react'
-import { markAportePaid, deleteAporte } from '@/app/actions/aportes'
+import { CheckCircle, ExternalLink, Upload, X, Trash2 } from 'lucide-react'
+import { markPayPeriodPaid, deletePayPeriod } from '@/app/actions/payroll'
 
-export function AporteActions({ id, status, voucherUrl }: { id: string; status: string; voucherUrl?: string | null }) {
-  const [loading, setLoading] = useState(false)
-  const [payOpen, setPayOpen] = useState(false)
-  const [file, setFile]       = useState<File | null>(null)
+export function NominaActions({ id, status, supportUrl }: { id: string; status: string; supportUrl?: string | null }) {
+  const [loading, setLoading]   = useState(false)
+  const [payOpen, setPayOpen]   = useState(false)
+  const [file, setFile]         = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
 
   async function handlePaid() {
@@ -24,55 +24,51 @@ export function AporteActions({ id, status, voucherUrl }: { id: string; status: 
       setUploading(false)
     }
 
-    await markAportePaid(id, url)
+    await markPayPeriodPaid(id, url)
     setLoading(false)
     setPayOpen(false)
     setFile(null)
   }
 
   async function handleDelete() {
-    if (!confirm('¿Eliminar este aporte?')) return
+    if (!confirm('¿Eliminar este pago de nómina?')) return
     setLoading(true)
-    await deleteAporte(id)
+    await deletePayPeriod(id)
     setLoading(false)
   }
 
   return (
-    <div style={{ display: 'flex', gap: 8 }}>
-      {voucherUrl && (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      {supportUrl && (
         <a
-          href={voucherUrl}
+          href={supportUrl}
           target="_blank"
           rel="noopener noreferrer"
           title="Ver comprobante"
           style={{
             background: '#F0EDFF', color: '#4429A6',
-            border: 'none', borderRadius: 8,
-            padding: '6px 10px', cursor: 'pointer',
-            display: 'flex', alignItems: 'center',
-            textDecoration: 'none',
+            borderRadius: 8, padding: '6px 10px',
+            display: 'inline-flex', alignItems: 'center', gap: 4,
+            fontSize: 12, fontWeight: 600, textDecoration: 'none',
           }}
         >
-          <ExternalLink size={13} />
+          <ExternalLink size={13} /> Comprobante
         </a>
       )}
-      {status === 'PENDING' && (
+      {status !== 'PAID' && (
         <button
           onClick={() => setPayOpen(true)}
           disabled={loading}
           title="Marcar como pagado"
           style={{
             background: '#dcfce7', color: '#15803d',
-            border: 'none', borderRadius: 8,
-            padding: '6px 10px', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', gap: 4,
-            fontSize: 12, fontWeight: 600,
-            fontFamily: 'Poppins, sans-serif',
+            border: 'none', borderRadius: 8, padding: '6px 10px',
+            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
+            fontSize: 12, fontWeight: 600, fontFamily: 'Poppins, sans-serif',
             opacity: loading ? 0.5 : 1,
           }}
         >
-          <CheckCircle size={13} />
-          Pagar
+          <CheckCircle size={13} /> Pagar
         </button>
       )}
       <button
@@ -81,9 +77,8 @@ export function AporteActions({ id, status, voucherUrl }: { id: string; status: 
         title="Eliminar"
         style={{
           background: '#fee2e2', color: '#b91c1c',
-          border: 'none', borderRadius: 8,
-          padding: '6px 10px', cursor: 'pointer',
-          display: 'flex', alignItems: 'center',
+          border: 'none', borderRadius: 8, padding: '6px 10px',
+          cursor: 'pointer', display: 'flex', alignItems: 'center',
           opacity: loading ? 0.5 : 1,
         }}
       >
@@ -98,7 +93,7 @@ export function AporteActions({ id, status, voucherUrl }: { id: string; status: 
           <div style={{ background: 'white', borderRadius: 20, padding: 32, width: '100%', maxWidth: 420, boxShadow: '0 24px 64px rgba(15,16,38,0.18)' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 18 }}>
               <div>
-                <h2 style={{ color: '#0F1026', fontSize: 18, fontWeight: 800, marginBottom: 4 }}>Marcar aporte como pagado</h2>
+                <h2 style={{ color: '#0F1026', fontSize: 18, fontWeight: 800, marginBottom: 4 }}>Marcar nómina como pagada</h2>
                 <p style={{ color: '#BBBBBB', fontSize: 13 }}>Adjunta el comprobante de pago (opcional)</p>
               </div>
               <button onClick={() => { setPayOpen(false); setFile(null) }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#BBBBBB', padding: 4 }}>

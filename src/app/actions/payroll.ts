@@ -23,6 +23,7 @@ export async function createPayPeriod(data: {
   status: string
   paidAt?: string
   notes?: string
+  supportUrl?: string
 }): Promise<{ success: boolean }> {
   const month = parseInt(data.month)
   const year = parseInt(data.year)
@@ -71,10 +72,30 @@ export async function createPayPeriod(data: {
       status: data.status,
       paidAt: data.paidAt ? new Date(data.paidAt) : null,
       notes: data.notes || null,
+      supportUrl: data.supportUrl || null,
       employeeId: data.employeeId,
     },
   })
 
+  revalidatePath('/admin/nomina')
+  return { success: true }
+}
+
+export async function markPayPeriodPaid(id: string, supportUrl?: string): Promise<{ success: boolean }> {
+  await prisma.payPeriod.update({
+    where: { id },
+    data: {
+      status: 'PAID',
+      paidAt: new Date(),
+      ...(supportUrl ? { supportUrl } : {}),
+    },
+  })
+  revalidatePath('/admin/nomina')
+  return { success: true }
+}
+
+export async function deletePayPeriod(id: string): Promise<{ success: boolean }> {
+  await prisma.payPeriod.delete({ where: { id } })
   revalidatePath('/admin/nomina')
   return { success: true }
 }

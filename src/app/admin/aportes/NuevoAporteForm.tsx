@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { Plus, X } from 'lucide-react'
+import { Plus, X, Upload } from 'lucide-react'
 import { createAporte } from '@/app/actions/aportes'
 
 const inputStyle = {
@@ -35,7 +35,8 @@ export function NuevoAporteForm({ employees }: { employees: Employee[] }) {
   const [arl, setArl]         = useState('')
   const [caja, setCaja]       = useState('')
   const [lateFee, setLateFee]       = useState('')
-  const [voucherUrl, setVoucherUrl] = useState('')
+  const [file, setFile]             = useState<File | null>(null)
+  const [uploading, setUploading]   = useState(false)
   const [saving, setSaving]         = useState(false)
   const formRef = useRef<HTMLFormElement>(null)
 
@@ -49,7 +50,7 @@ export function NuevoAporteForm({ employees }: { employees: Employee[] }) {
 
   function handleClose() {
     setOpen(false)
-    setHealth(''); setPension(''); setArl(''); setCaja(''); setLateFee(''); setVoucherUrl('')
+    setHealth(''); setPension(''); setArl(''); setCaja(''); setLateFee(''); setFile(null)
     formRef.current?.reset()
   }
 
@@ -57,6 +58,18 @@ export function NuevoAporteForm({ employees }: { employees: Employee[] }) {
     e.preventDefault()
     setSaving(true)
     const fd = new FormData(e.currentTarget)
+
+    let voucherUrl: string | undefined
+    if (file) {
+      setUploading(true)
+      const up = new FormData()
+      up.append('file', file)
+      const res = await fetch('/api/upload', { method: 'POST', body: up })
+      const data = await res.json()
+      voucherUrl = data.url || undefined
+      setUploading(false)
+    }
+
     await createAporte({
       employeeId: fd.get('employeeId') as string,
       period:     fd.get('period')     as string,
@@ -65,7 +78,7 @@ export function NuevoAporteForm({ employees }: { employees: Employee[] }) {
       arl:        fd.get('arl')        as string,
       caja:       fd.get('caja')       as string,
       lateFee:    fd.get('lateFee')    as string,
-      voucherUrl: (fd.get('voucherUrl') as string) || undefined,
+      voucherUrl,
     })
     setSaving(false)
     handleClose()
@@ -166,15 +179,21 @@ export function NuevoAporteForm({ employees }: { employees: Employee[] }) {
               </div>
 
               <div style={{ marginBottom: 20 }}>
-                <label style={labelStyle}>Comprobante de pago <span style={{ fontWeight: 400, textTransform: 'none' }}>(link Google Drive, opcional)</span></label>
-                <input
-                  type="url"
-                  name="voucherUrl"
-                  placeholder="https://drive.google.com/..."
-                  value={voucherUrl}
-                  onChange={e => setVoucherUrl(e.target.value)}
-                  style={inputStyle}
-                />
+                <label style={labelStyle}>Comprobante de pago <span style={{ fontWeight: 400, textTransform: 'none' }}>(imagen / PDF, opcional)</span></label>
+                <label style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  background: '#F4F4F7', borderRadius: 10, padding: '11px 14px',
+                  cursor: 'pointer', fontSize: 13, color: file ? '#0F1026' : '#A2A2A2',
+                }}>
+                  <Upload size={16} color="#A2A2A2" />
+                  {file ? file.name : 'Seleccionar archivo...'}
+                  <input
+                    type="file"
+                    accept="image/*,.pdf"
+                    style={{ display: 'none' }}
+                    onChange={e => setFile(e.target.files?.[0] ?? null)}
+                  />
+                </label>
               </div>
 
               {total > 0 && (
@@ -196,7 +215,7 @@ export function NuevoAporteForm({ employees }: { employees: Employee[] }) {
                   Cancelar
                 </button>
                 <button type="submit" disabled={saving} style={{ padding: '10px 28px', borderRadius: 10, border: 'none', background: saving ? '#C0BADF' : '#4429A6', color: 'white', fontWeight: 700, fontSize: 14, cursor: saving ? 'not-allowed' : 'pointer', fontFamily: 'Poppins, sans-serif', transition: 'background 0.15s' }}>
-                  {saving ? 'Guardando...' : 'Registrar'}
+                  {uploading ? 'Subiendo...' : saving ? 'Guardando...' : 'Registrar'}
                 </button>
               </div>
             </form>

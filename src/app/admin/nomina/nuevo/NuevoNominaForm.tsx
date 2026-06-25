@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Upload } from 'lucide-react'
 import { createPayPeriod } from '@/app/actions/payroll'
 import { formatCOP } from '@/lib/utils'
 
@@ -73,6 +73,8 @@ export function NuevoNominaForm({ employees }: { employees: EmployeeOption[] }) 
   const [status, setStatus] = useState('PAID')
   const [paidAt, setPaidAt] = useState(today.toISOString().split('T')[0])
   const [notes, setNotes] = useState('')
+  const [file, setFile] = useState<File | null>(null)
+  const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
@@ -90,6 +92,18 @@ export function NuevoNominaForm({ employees }: { employees: EmployeeOption[] }) 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSaving(true)
+
+    let supportUrl: string | undefined
+    if (file) {
+      setUploading(true)
+      const up = new FormData()
+      up.append('file', file)
+      const res = await fetch('/api/upload', { method: 'POST', body: up })
+      const data = await res.json()
+      supportUrl = data.url || undefined
+      setUploading(false)
+    }
+
     const result = await createPayPeriod({
       employeeId,
       quincena,
@@ -108,8 +122,10 @@ export function NuevoNominaForm({ employees }: { employees: EmployeeOption[] }) 
       status,
       paidAt: status === 'PAID' ? paidAt : undefined,
       notes,
+      supportUrl,
     })
     if (result.success) router.push('/admin/nomina')
+    else setSaving(false)
   }
 
   const selectedEmp = employees.find(e => e.id === employeeId)
@@ -395,6 +411,24 @@ export function NuevoNominaForm({ employees }: { employees: EmployeeOption[] }) 
                 </div>
               )}
 
+              <div style={{ marginBottom: 20 }}>
+                <label style={labelStyle}>Comprobante de pago <span style={{ fontWeight: 400, textTransform: 'none' }}>(imagen / PDF, opcional)</span></label>
+                <label style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  background: '#F4F4F7', borderRadius: 10, padding: '11px 14px',
+                  cursor: 'pointer', fontSize: 13, color: file ? '#0F1026' : '#A2A2A2',
+                }}>
+                  <Upload size={16} color="#A2A2A2" />
+                  {file ? file.name : 'Seleccionar archivo...'}
+                  <input
+                    type="file"
+                    accept="image/*,.pdf"
+                    style={{ display: 'none' }}
+                    onChange={e => setFile(e.target.files?.[0] ?? null)}
+                  />
+                </label>
+              </div>
+
               <div>
                 <label style={labelStyle}>Notas internas <span style={{ fontWeight: 400, textTransform: 'none' }}>(opcional)</span></label>
                 <textarea
@@ -468,7 +502,7 @@ export function NuevoNominaForm({ employees }: { employees: EmployeeOption[] }) 
                   marginBottom: 10,
                 }}
               >
-                {saving ? 'Guardando...' : 'Registrar Pago'}
+                {uploading ? 'Subiendo...' : saving ? 'Guardando...' : 'Registrar Pago'}
               </button>
 
               <Link

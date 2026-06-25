@@ -33,10 +33,14 @@ export async function createAporte(data: {
   revalidatePath('/admin/aportes')
 }
 
-export async function markAportePaid(id: string) {
+export async function markAportePaid(id: string, voucherUrl?: string) {
   await prisma.socialContribution.update({
     where: { id },
-    data: { status: 'PAID', paidAt: new Date() },
+    data: {
+      status: 'PAID',
+      paidAt: new Date(),
+      ...(voucherUrl ? { voucherUrl } : {}),
+    },
   })
   revalidatePath('/admin/aportes')
 }
