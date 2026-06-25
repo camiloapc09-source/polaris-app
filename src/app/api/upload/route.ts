@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
-import { writeFile, mkdir } from 'fs/promises'
-import path from 'path'
+import { prisma } from '@/lib/db'
 
 export async function POST(request: Request) {
   const formData = await request.formData()
@@ -10,12 +9,15 @@ export async function POST(request: Request) {
   const bytes = await file.arrayBuffer()
   const buffer = Buffer.from(bytes)
 
-  const uploadsDir = path.join(process.cwd(), 'public', 'uploads')
-  await mkdir(uploadsDir, { recursive: true })
+  const saved = await prisma.uploadedFile.create({
+    data: {
+      filename: file.name,
+      mimeType: file.type || 'application/octet-stream',
+      size: buffer.length,
+      data: buffer,
+    },
+    select: { id: true },
+  })
 
-  const ext = path.extname(file.name)
-  const safeName = `${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`
-  await writeFile(path.join(uploadsDir, safeName), buffer)
-
-  return NextResponse.json({ url: `/uploads/${safeName}` })
+  return NextResponse.json({ url: `/api/files/${saved.id}` })
 }

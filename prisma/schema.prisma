@@ -176,6 +176,15 @@ model ServiceInvoice {
   companyId String
 }
 
+model UploadedFile {
+  id        String   @id @default(cuid())
+  filename  String
+  mimeType  String
+  size      Int
+  data      Bytes
+  createdAt DateTime @default(now())
+}
+
 model LeaveRequest {
   id          String   @id @default(cuid())
   type        String   @default("SICK")

@@ -45,8 +45,8 @@ export default async function EmpleadosPage() {
         </div>
       </div>
 
-      <div style={{ background: 'white', borderRadius: 16, border: '1px solid #EFEFEF', overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <div style={{ background: 'white', borderRadius: 16, border: '1px solid #EFEFEF', overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 720 }}>
           <thead>
             <tr style={{ borderBottom: '1px solid #F0F0F0' }}>
               {['Empleado', 'Empresa', 'Cargo', 'Inicio', 'Salario Q.', 'Último pago', 'Estado', ''].map((h, i) => (

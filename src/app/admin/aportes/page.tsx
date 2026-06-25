@@ -60,8 +60,8 @@ export default async function AportesPage() {
       </div>
 
       {/* Table */}
-      <div style={{ background: 'white', borderRadius: 16, border: '1px solid #EFEFEF', overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <div style={{ background: 'white', borderRadius: 16, border: '1px solid #EFEFEF', overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 720 }}>
           <thead>
             <tr style={{ borderBottom: '1px solid #F0F0F0' }}>
               {['Empleado', 'Período', 'Salud', 'Pensión', 'ARL', 'Caja', 'Mora', 'Total', 'Estado', ''].map((h, i) => (
