@@ -47,7 +47,7 @@ async function main() {
       firstName: 'Justine',
       lastName: 'Escamilla',
       email: 'justine@koversolutions.com',
-      position: 'Coordinadora',
+      position: 'Asistente Administrativa y Financiera',
       startDate: new Date('2026-01-15'),
       salary: 1150000,
       conectividadDefault: 200000,

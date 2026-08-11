@@ -8,7 +8,7 @@ import {
   LayoutDashboard, Users, DollarSign, TrendingUp,
   FileText, LogOut, Building2, Calendar, Receipt,
   HeartPulse, Stethoscope, Heart, Award, Send,
-  ShieldCheck, UserCog, Menu, X,
+  ShieldCheck, UserCog, Menu, X, ClipboardList, ListChecks,
 } from 'lucide-react'
 
 interface NavItem { href: string; label: string; icon: React.ElementType; section?: string }
@@ -22,6 +22,8 @@ const adminNav: NavItem[] = [
   { href: '/admin/ingresos',       label: 'Ingresos',           icon: TrendingUp },
   { href: '/admin/facturas',       label: 'Facturas Servicio',  icon: Receipt },
   { href: '/admin/incapacidades',  label: 'Incapacidades',      icon: Calendar },
+  { href: '/admin/desempeno',      label: 'Desempeño',          icon: ClipboardList, section: 'Servicios' },
+  { href: '/admin/plantillas',     label: 'Plantillas de Tareas', icon: ListChecks,  section: 'Servicios' },
   { href: '/admin/certificados',   label: 'Certificados',       icon: Award,       section: 'Servicios' },
   { href: '/admin/examenes',       label: 'Exámenes Médicos',   icon: Stethoscope, section: 'Servicios' },
   { href: '/admin/bienestar',      label: 'Bienestar',          icon: Heart,       section: 'Servicios' },
@@ -44,6 +46,7 @@ const employeeNav: NavItem[] = [
   { href: '/employee',                   label: 'Mi Panel',           icon: LayoutDashboard },
   { href: '/employee/colillas',          label: 'Colillas de Pago',   icon: FileText },
   { href: '/employee/incapacidades',     label: 'Mis Incapacidades',  icon: HeartPulse },
+  { href: '/employee/desempeno',         label: 'Mi Desempeño',       icon: ClipboardList },
   { href: '/employee/certificados',      label: 'Certificados',       icon: Award },
   { href: '/employee/examenes',          label: 'Exámenes Médicos',   icon: Stethoscope },
   { href: '/employee/bienestar',         label: 'Bienestar',          icon: Heart },
