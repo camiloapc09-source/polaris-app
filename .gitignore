@@ -58,3 +58,7 @@ test-results/
 next-env.d.ts
 
 /src/generated/prisma
+
+# Sesiones de Playwright (contienen cookies de autenticación)
+playwright/.auth/
+playwright.local.config.ts

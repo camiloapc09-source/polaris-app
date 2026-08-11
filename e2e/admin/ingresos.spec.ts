@@ -30,7 +30,7 @@ test.describe('Admin — Ingresos', () => {
   test('el botón de registrar ingreso es visible', async ({ page }) => {
     await page.goto('/admin/ingresos')
     // El botón debe existir en la página
-    const btn = page.getByRole('button', { name: /registrar ingreso/i })
+    const btn = page.getByRole('button', { name: /nuevo ingreso/i })
     await expect(btn).toBeVisible()
   })
 })

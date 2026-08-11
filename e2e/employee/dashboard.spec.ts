@@ -12,7 +12,7 @@ test.describe('Empleado — Dashboard', () => {
 
   test('muestra el salario correcto de Justine ($1.150.000)', async ({ page }) => {
     await page.goto('/employee')
-    await expect(page.getByText('1.150.000')).toBeVisible()
+    await expect(page.getByText('1.150.000').first()).toBeVisible()
   })
 
   test('muestra sección de últimas colillas', async ({ page }) => {
@@ -23,7 +23,7 @@ test.describe('Empleado — Dashboard', () => {
 
   test('muestra sección de mis incapacidades', async ({ page }) => {
     await page.goto('/employee')
-    await expect(page.getByText('Mis Incapacidades')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Mis Incapacidades' })).toBeVisible()
   })
 
   test('el link Ver todas de colillas navega a /employee/colillas', async ({ page }) => {

@@ -10,7 +10,7 @@ export class AdminDashboardPage {
   async expectLoaded() {
     await expect(this.page.getByRole('heading', { name: 'Dashboard' })).toBeVisible()
     await expect(this.page.getByText('Saldo Disponible')).toBeVisible()
-    await expect(this.page.getByText('Total Ingresos')).toBeVisible()
+    await expect(this.page.getByText('Total Ingresos', { exact: true })).toBeVisible()
     await expect(this.page.getByText('Empleados Activos')).toBeVisible()
   }
 }
@@ -29,7 +29,7 @@ export class AdminIngresosPage {
   }
 
   async openForm() {
-    await this.page.getByRole('button', { name: /Registrar ingreso/i }).click()
+    await this.page.getByRole('button', { name: /Nuevo Ingreso/i }).click()
   }
 
   async fillIngreso(opts: { usd: string; trm: string; description?: string }) {
@@ -50,7 +50,7 @@ export class AdminNominaPage {
 
   async expectLoaded() {
     await expect(this.page.getByRole('heading', { name: 'Nómina' })).toBeVisible()
-    await expect(this.page.getByText('Total Pagado')).toBeVisible()
+    await expect(this.page.getByText(/Total pagado/i).first()).toBeVisible()
   }
 
   async goToNuevoPago() {

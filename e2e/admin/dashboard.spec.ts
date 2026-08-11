@@ -11,9 +11,11 @@ test.describe('Admin — Dashboard', () => {
   test('muestra la distribución de egresos', async ({ page }) => {
     await page.goto('/admin')
     await expect(page.getByText('Distribución de Egresos')).toBeVisible()
-    await expect(page.getByText('Nómina')).toBeVisible()
-    await expect(page.getByText('Aportes Sociales')).toBeVisible()
-    await expect(page.getByText('Servicio Star Shine')).toBeVisible()
+    // Egresos = Nómina + Aportes. Las cuentas de cobro al cliente NO son egreso.
+    const main = page.getByRole('main')
+    await expect(main.getByText('Nómina', { exact: true })).toBeVisible()
+    await expect(main.getByText('Aportes Sociales', { exact: true })).toBeVisible()
+    await expect(main.getByText('Servicio Star Shine')).toHaveCount(0)
   })
 
   test('muestra las últimas nóminas', async ({ page }) => {
