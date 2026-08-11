@@ -1,7 +1,14 @@
 'use server'
 
 import { prisma } from '@/lib/db'
+import { auth } from '@/lib/auth'
 import { revalidatePath } from 'next/cache'
+
+async function requireAdmin() {
+  const session = await auth()
+  const user = session?.user as any
+  if (user?.role !== 'ADMIN') throw new Error('No autorizado')
+}
 
 export async function createEmployee(data: {
   firstName: string
@@ -18,6 +25,7 @@ export async function createEmployee(data: {
   conectividadDefault?: string
   toolsDefault?: string
 }) {
+  await requireAdmin()
   await prisma.employee.create({
     data: {
       firstName: data.firstName,
@@ -39,6 +47,7 @@ export async function createEmployee(data: {
 }
 
 export async function updateEmployeeStatus(id: string, status: string) {
+  await requireAdmin()
   await prisma.employee.update({ where: { id }, data: { status } })
   revalidatePath('/admin/empleados')
 }

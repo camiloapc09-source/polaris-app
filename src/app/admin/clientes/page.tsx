@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db'
 import { Building2 } from 'lucide-react'
+import { NuevoClienteForm } from './NuevoClienteForm'
 
 export default async function ClientesPage() {
   const companies = await prisma.company.findMany({
@@ -25,6 +26,7 @@ export default async function ClientesPage() {
           </h1>
           <p style={{ color: '#BBBBBB', fontSize: 14, marginTop: 6 }}>Empresas gestionadas bajo modelo EOR</p>
         </div>
+        <NuevoClienteForm />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, marginBottom: 32 }}>

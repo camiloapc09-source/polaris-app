@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/db'
 import { ShieldCheck } from 'lucide-react'
 import { ResetPasswordButton } from './ResetPasswordButton'
+import { NuevoUsuarioForm } from './NuevoUsuarioForm'
 
 const ROLE_INFO: Record<string, { label: string; bg: string; color: string }> = {
   ADMIN:    { label: 'Star Shine', bg: '#EDE9FE', color: '#4429A6' },
@@ -9,23 +10,50 @@ const ROLE_INFO: Record<string, { label: string; bg: string; color: string }> = 
 }
 
 export default async function AdminAccesosPage() {
-  const users = await prisma.user.findMany({
-    include: { company: true },
-    orderBy: [{ role: 'asc' }, { name: 'asc' }],
-  })
+  const [users, companies, employees] = await Promise.all([
+    prisma.user.findMany({
+      include: { company: true },
+      orderBy: [{ role: 'asc' }, { name: 'asc' }],
+    }),
+    prisma.company.findMany({
+      select: { id: true, name: true },
+      orderBy: { name: 'asc' },
+    }),
+    prisma.employee.findMany({
+      where: { status: 'ACTIVE' },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        company: { select: { name: true } },
+        user: { select: { id: true } },
+      },
+      orderBy: { firstName: 'asc' },
+    }),
+  ])
+
+  const employeeOptions = employees.map((e) => ({
+    id: e.id,
+    nombre: `${e.firstName} ${e.lastName}`,
+    companyName: e.company.name,
+    yaTieneUsuario: !!e.user,
+  }))
 
   return (
     <div>
-      <div style={{ marginBottom: 36 }}>
-        <p style={{ color: '#A2A2A2', fontSize: 11, fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 6 }}>
-          Star Shine · Polaris
-        </p>
-        <h1 style={{ color: '#0F1026', fontSize: 32, fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1 }}>
-          Accesos y Usuarios
-        </h1>
-        <p style={{ color: '#BBBBBB', fontSize: 14, marginTop: 6 }}>
-          Restablece la contraseña de cualquier usuario que la haya olvidado
-        </p>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 36 }}>
+        <div>
+          <p style={{ color: '#A2A2A2', fontSize: 11, fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 6 }}>
+            Star Shine · Polaris
+          </p>
+          <h1 style={{ color: '#0F1026', fontSize: 32, fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1 }}>
+            Accesos y Usuarios
+          </h1>
+          <p style={{ color: '#BBBBBB', fontSize: 14, marginTop: 6 }}>
+            Crea cuentas de acceso y restablece contraseñas
+          </p>
+        </div>
+        <NuevoUsuarioForm companies={companies} employees={employeeOptions} />
       </div>
 
       <div style={{ background: 'white', borderRadius: 16, border: '1px solid #EFEFEF', overflowX: 'auto' }}>
