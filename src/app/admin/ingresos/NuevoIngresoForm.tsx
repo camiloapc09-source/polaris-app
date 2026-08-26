@@ -181,7 +181,7 @@ export function NuevoIngresoForm() {
                 <input
                   type="text"
                   name="description"
-                  placeholder="ej: Pago Mayo Q1 – Kover Solutions"
+                  placeholder="ej: Pago Mayo Q1 – nombre del cliente"
                   style={inputStyle}
                 />
               </div>

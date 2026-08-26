@@ -143,7 +143,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     </table>
 
     ${(payPeriod.healthAmount || payPeriod.pensionAmount) ? `
-    <p class="section-title" style="margin-top:28px;">Aportes Sociales (asumidos por Kover Solutions)</p>
+    <p class="section-title" style="margin-top:28px;">Aportes Sociales (asumidos por ${payPeriod.employee.company.name})</p>
     <table class="table">
       <thead>
         <tr>
@@ -158,7 +158,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       </tbody>
       <tfoot>
         <tr style="background:#F0EDFF;">
-          <td colspan="2" style="padding:12px 16px;font-size:13px;font-weight:700;color:#4429A6;">COSTO TOTAL PARA KOVER</td>
+          <td colspan="2" style="padding:12px 16px;font-size:13px;font-weight:700;color:#4429A6;">COSTO TOTAL PARA ${payPeriod.employee.company.name.toUpperCase()}</td>
           <td style="padding:12px 16px;text-align:right;font-size:15px;font-weight:800;color:#4429A6;">${formatCOP(payPeriod.netPay + (payPeriod.healthAmount || 0) + (payPeriod.pensionAmount || 0))}</td>
         </tr>
       </tfoot>

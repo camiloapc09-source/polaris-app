@@ -135,6 +135,7 @@ export default async function FacturasPage() {
                     status={f.status}
                     sentEvidenceUrl={f.sentEvidenceUrl}
                     sentAmountUSD={f.sentAmountUSD}
+                    companyName={f.company.name}
                   />
                 </td>
               </tr>

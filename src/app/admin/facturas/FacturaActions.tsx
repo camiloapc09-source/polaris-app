@@ -31,9 +31,10 @@ interface Props {
   status: string
   sentEvidenceUrl?: string | null
   sentAmountUSD?: number | null
+  companyName: string
 }
 
-export function FacturaActions({ id, status, sentEvidenceUrl, sentAmountUSD }: Props) {
+export function FacturaActions({ id, status, sentEvidenceUrl, sentAmountUSD, companyName }: Props) {
   const [loading, setLoading]       = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [copAmount, setCopAmount]   = useState('')
@@ -129,7 +130,7 @@ export function FacturaActions({ id, status, sentEvidenceUrl, sentAmountUSD }: P
           <div style={{ background: 'white', borderRadius: 20, padding: 32, width: '100%', maxWidth: 420, boxShadow: '0 24px 64px rgba(15,16,38,0.18)' }}>
             <h2 style={{ color: '#0F1026', fontSize: 18, fontWeight: 800, marginBottom: 6 }}>Confirmar Pago Recibido</h2>
             <p style={{ color: '#BBBBBB', fontSize: 13, marginBottom: 20 }}>
-              Kover reportó envío de{' '}
+              {companyName} reportó envío de{' '}
               <strong style={{ color: '#0F1026' }}>
                 {sentAmountUSD ? fmtUSD(sentAmountUSD) : 'monto no registrado'}
               </strong>.

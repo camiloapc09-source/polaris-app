@@ -29,11 +29,12 @@ const labelStyle = {
 interface Props {
   paymentId: string
   amountUSD: number
+  companyName?: string
   description: string | null
   onClose: () => void
 }
 
-export function ConfirmarPagoForm({ paymentId, amountUSD, description, onClose }: Props) {
+export function ConfirmarPagoForm({ paymentId, amountUSD, description, companyName, onClose }: Props) {
   const [cop, setCop] = useState('')
   const [trm, setTrm] = useState('')
   const [platform, setPlatform] = useState('WISE')
@@ -80,7 +81,7 @@ export function ConfirmarPagoForm({ paymentId, amountUSD, description, onClose }
           <div>
             <h2 style={{ color: '#0F1026', fontSize: 20, fontWeight: 800, marginBottom: 4 }}>Confirmar Recibo</h2>
             <p style={{ color: '#BBBBBB', fontSize: 13 }}>
-              Kover envió <strong style={{ color: '#4429A6' }}>{fmtUSD(amountUSD)} USD</strong>
+              {companyName ?? 'El cliente'} envió <strong style={{ color: '#4429A6' }}>{fmtUSD(amountUSD)} USD</strong>
               {description && <> · {description}</>}
             </p>
           </div>

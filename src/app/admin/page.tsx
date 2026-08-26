@@ -54,7 +54,7 @@ export default async function AdminDashboard() {
         <StatCard
           title="Total Ingresos"
           value={formatCOP(totalIn)}
-          subtitle="Pagos recibidos de Kover"
+          subtitle="Pagos recibidos de clientes"
         />
         <StatCard
           title="Empleados Activos"

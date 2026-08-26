@@ -8,6 +8,17 @@ function fmt(n: number) {
   return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(n)
 }
 
+// El documento se arma como HTML, así que todo texto que venga de la BD
+// (nombre del cliente, descripciones de los ítems) debe escaparse.
+function escapeHtml(s: string) {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
 function formatDateES(d: Date) {
   return d.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
 }
@@ -63,12 +74,12 @@ export async function GET(
           <div class="desc-wrap">
             <span class="dot" style="background:${dot}"></span>
             <span>
-              <span class="desc-title">${item.description}</span>
-              ${item.subtitle ? `<span class="desc-sub">${item.subtitle}</span>` : ''}
+              <span class="desc-title">${escapeHtml(item.description)}</span>
+              ${item.subtitle ? `<span class="desc-sub">${escapeHtml(item.subtitle)}</span>` : ''}
             </span>
           </div>
         </td>
-        <td>${item.period || '&mdash;'}</td>
+        <td>${item.period ? escapeHtml(item.period) : '&mdash;'}</td>
         <td>${fmt(item.baseAmount)}</td>
         <td>${fmt(item.gastosAmount)}</td>
         <td>${ivaCell}</td>
@@ -78,7 +89,7 @@ export async function GET(
 
   const summaryRows = items.map(item => `
     <div class="sub-row">
-      <span>${item.description}${item.subtitle ? ` &mdash; ${item.subtitle}` : ''}</span>
+      <span>${escapeHtml(item.description)}${item.subtitle ? ` &mdash; ${escapeHtml(item.subtitle)}` : ''}</span>
       <span class="sub-val">${fmt(item.total)}</span>
     </div>`
   ).join('')
@@ -211,10 +222,10 @@ export async function GET(
     </div>
     <div class="party-box receptor">
       <p class="party-tag">Receptor</p>
-      <p class="party-name">${company.name.toUpperCase()}</p>
-      ${company.country === 'US' ? '<p class="party-line">Empresa constituida bajo las leyes de EE.UU.</p>' : `<p class="party-line">${company.country}</p>`}
-      ${company.contactName ? `<p class="party-line">Responsables:</p><p class="party-line"><strong>${company.contactName}</strong></p>` : ''}
-      ${company.contactEmail ? `<p class="party-line">${company.contactEmail}</p>` : ''}
+      <p class="party-name">${escapeHtml(company.name.toUpperCase())}</p>
+      ${company.country === 'US' ? '<p class="party-line">Empresa constituida bajo las leyes de EE.UU.</p>' : `<p class="party-line">${escapeHtml(company.country)}</p>`}
+      ${company.contactName ? `<p class="party-line">Responsables:</p><p class="party-line"><strong>${escapeHtml(company.contactName)}</strong></p>` : ''}
+      ${company.contactEmail ? `<p class="party-line">${escapeHtml(company.contactEmail)}</p>` : ''}
     </div>
   </div>
 
@@ -245,7 +256,7 @@ export async function GET(
         <div class="pago-row"><span class="pago-label">Banco:</span><span class="pago-val">Bancolombia</span></div>
         <div class="pago-row"><span class="pago-label">Tipo:</span><span class="pago-val">Ahorros / A la mano</span></div>
         <div class="pago-row"><span class="pago-label">N&uacute;mero:</span><span class="pago-val">91276281564</span></div>
-        <div class="pago-row"><span class="pago-label">Concepto:</span><span class="pago-val">Cuenta de Cobro No. ${invNum} &mdash; KOVER</span></div>
+        <div class="pago-row"><span class="pago-label">Concepto:</span><span class="pago-val">Cuenta de Cobro No. ${invNum} &mdash; ${escapeHtml(company.name.toUpperCase())}</span></div>
       </div>
     </div>
     <div class="panel">

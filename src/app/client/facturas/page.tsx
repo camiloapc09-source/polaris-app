@@ -9,6 +9,12 @@ export default async function ClientFacturasPage() {
   const user = session?.user as any
   const companyId = user?.companyId
 
+  // El encabezado debe mostrar la empresa del usuario, no un nombre fijo
+  const company = companyId
+    ? await prisma.company.findUnique({ where: { id: companyId }, select: { name: true } })
+    : null
+  const companyName = company?.name ?? 'Polaris'
+
   const facturas = await prisma.serviceInvoice.findMany({
     where: { companyId },
     orderBy: { createdAt: 'desc' },
@@ -37,7 +43,7 @@ export default async function ClientFacturasPage() {
     <div>
       <div style={{ marginBottom: 36 }}>
         <p style={{ color: '#A2A2A2', fontSize: 11, fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 6 }}>
-          Kover Solutions · Polaris
+          {companyName} · Polaris
         </p>
         <h1 style={{ color: '#0F1026', fontSize: 32, fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1 }}>
           Facturas de Servicio

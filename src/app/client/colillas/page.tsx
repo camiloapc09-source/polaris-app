@@ -7,6 +7,12 @@ export default async function ClientColillasPage() {
   const user = session?.user as any
   const companyId = user?.companyId
 
+  // El encabezado debe mostrar la empresa del usuario, no un nombre fijo
+  const company = companyId
+    ? await prisma.company.findUnique({ where: { id: companyId }, select: { name: true } })
+    : null
+  const companyName = company?.name ?? 'Polaris'
+
   const employees = await prisma.employee.findMany({
     where: { companyId, status: 'ACTIVE' },
     include: {
@@ -20,7 +26,7 @@ export default async function ClientColillasPage() {
     <div>
       <div style={{ marginBottom: 32 }}>
         <p style={{ color: '#A2A2A2', fontSize: 11, fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 6 }}>
-          Kover Solutions · Polaris
+          {companyName} · Polaris
         </p>
         <h1 style={{ color: '#0F1026', fontSize: 32, fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1 }}>
           Colillas y Aportes

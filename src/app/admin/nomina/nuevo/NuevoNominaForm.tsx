@@ -366,8 +366,8 @@ export function NuevoNominaForm({ employees }: { employees: EmployeeOption[] }) 
               </div>
               {(healthAmount > 0 || pensionAmount > 0) && (
                 <div style={{ marginTop: 12, padding: '10px 14px', background: '#F8F7FF', borderRadius: 10, fontSize: 12, color: '#7F71D9' }}>
-                  Costo total para Kover: <strong>{formatCOP(netPay + healthAmount + pensionAmount)}</strong>
-                  {' '}(neto Justine + aportes)
+                  Costo total para {selectedEmp?.companyName ?? 'el cliente'}: <strong>{formatCOP(netPay + healthAmount + pensionAmount)}</strong>
+                  {' '}(neto {selectedEmp?.name.split(' ')[0] ?? 'del trabajador'} + aportes)
                 </div>
               )}
             </div>

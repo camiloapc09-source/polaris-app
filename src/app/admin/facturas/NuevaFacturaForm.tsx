@@ -158,7 +158,7 @@ export function NuevaFacturaForm({ companies }: { companies: Company[] }) {
             <div style={{ padding: '28px 32px', borderBottom: '1px solid #F0F0F0', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', position: 'sticky', top: 0, background: 'white', zIndex: 10 }}>
               <div>
                 <h2 style={{ color: '#0F1026', fontSize: 20, fontWeight: 800, marginBottom: 2 }}>Nueva Cuenta de Cobro</h2>
-                <p style={{ color: '#BBBBBB', fontSize: 13 }}>Factura de servicio Star Shine → Kover Solutions</p>
+                <p style={{ color: '#BBBBBB', fontSize: 13 }}>Factura de servicio de Star Shine al cliente</p>
               </div>
               <button onClick={handleClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#BBBBBB', padding: 4, marginTop: -4 }}>
                 <X size={20} />

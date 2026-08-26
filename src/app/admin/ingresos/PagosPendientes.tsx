@@ -90,6 +90,7 @@ export function PagosPendientes({ payments }: { payments: PendingPayment[] }) {
           paymentId={confirming.id}
           amountUSD={confirming.amountUSD}
           description={confirming.description}
+          companyName={confirming.company.name}
           onClose={() => setConfirming(null)}
         />
       )}
