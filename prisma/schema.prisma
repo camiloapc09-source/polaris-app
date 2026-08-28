@@ -137,6 +137,7 @@ model Income {
   company       Company        @relation(fields: [companyId], references: [id])
   companyId     String
   clientPayment ClientPayment?
+  serviceInvoice ServiceInvoice?
 }
 
 model ClientPayment {
@@ -177,6 +178,11 @@ model ServiceInvoice {
 
   company   Company @relation(fields: [companyId], references: [id])
   companyId String
+
+  // Ingreso generado al confirmar el pago. Unico: evita contar dos veces
+  // la misma cuenta de cobro si se vuelve a confirmar.
+  incomeId String? @unique
+  income   Income? @relation(fields: [incomeId], references: [id])
 }
 
 model UploadedFile {

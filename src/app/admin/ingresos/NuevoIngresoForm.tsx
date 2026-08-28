@@ -26,11 +26,15 @@ const labelStyle = {
   marginBottom: 6,
 } as const
 
-export function NuevoIngresoForm() {
+type CompanyOption = { id: string; name: string }
+
+export function NuevoIngresoForm({ companies }: { companies: CompanyOption[] }) {
   const [open, setOpen] = useState(false)
   const [usd, setUsd] = useState('')
   const [trm, setTrm] = useState('')
   const [cop, setCop] = useState('')
+  const [companyId, setCompanyId] = useState(companies[0]?.id ?? '')
+  const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
   const formRef = useRef<HTMLFormElement>(null)
 
@@ -47,23 +51,32 @@ export function NuevoIngresoForm() {
     setUsd('')
     setTrm('')
     setCop('')
+    setError('')
+    setCompanyId(companies[0]?.id ?? '')
     formRef.current?.reset()
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setSaving(true)
+    setError('')
     const fd = new FormData(e.currentTarget)
-    await createIncome({
-      date: fd.get('date') as string,
-      amountUSD: fd.get('amountUSD') as string,
-      exchangeRate: fd.get('exchangeRate') as string,
-      amountCOP: fd.get('amountCOP') as string,
-      platform: fd.get('platform') as string,
-      description: fd.get('description') as string,
-    })
-    setSaving(false)
-    handleClose()
+    try {
+      await createIncome({
+        date: fd.get('date') as string,
+        amountUSD: fd.get('amountUSD') as string,
+        exchangeRate: fd.get('exchangeRate') as string,
+        amountCOP: fd.get('amountCOP') as string,
+        platform: fd.get('platform') as string,
+        description: fd.get('description') as string,
+        companyId: fd.get('companyId') as string,
+      })
+      handleClose()
+    } catch (err: any) {
+      setError(err?.message || 'Error al registrar el ingreso')
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -118,6 +131,21 @@ export function NuevoIngresoForm() {
                     defaultValue={new Date().toISOString().split('T')[0]}
                     style={inputStyle}
                   />
+                </div>
+                <div>
+                  <label style={labelStyle}>Cliente</label>
+                  <select
+                    name="companyId"
+                    required
+                    value={companyId}
+                    onChange={e => setCompanyId(e.target.value)}
+                    style={inputStyle}
+                  >
+                    <option value="">Seleccionar...</option>
+                    {companies.map(c => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label style={labelStyle}>Plataforma</label>
@@ -186,6 +214,11 @@ export function NuevoIngresoForm() {
                 />
               </div>
 
+              {error && (
+                <div style={{ background: '#FEE2E2', color: '#B91C1C', fontSize: 13, padding: '10px 14px', borderRadius: 10, marginBottom: 16 }}>
+                  {error}
+                </div>
+              )}
               <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
                 <button
                   type="button"

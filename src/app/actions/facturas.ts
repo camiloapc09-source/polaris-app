@@ -23,6 +23,13 @@ export interface StoredLineItem {
   total: number
 }
 
+function revalidateAll() {
+  revalidatePath('/admin/facturas')
+  revalidatePath('/admin/ingresos')
+  revalidatePath('/admin')
+  revalidatePath('/client/facturas')
+}
+
 export async function createFactura(data: {
   companyId: string
   invoiceNumber: string
@@ -30,6 +37,8 @@ export async function createFactura(data: {
   period: string
   lineItemsJson: string
 }) {
+  await requireAdmin()
+
   let items: StoredLineItem[] = []
   try { items = JSON.parse(data.lineItemsJson) } catch {}
 
@@ -51,11 +60,12 @@ export async function createFactura(data: {
     },
   })
 
-  revalidatePath('/admin/facturas')
-  revalidatePath('/client/facturas')
+  revalidateAll()
 }
 
 export async function markFacturaSent(id: string, amountUSD: number, evidenceUrl: string) {
+  await requireAdmin()
+
   await prisma.serviceInvoice.update({
     where: { id },
     data: {
@@ -65,13 +75,15 @@ export async function markFacturaSent(id: string, amountUSD: number, evidenceUrl
       sentAt: new Date(),
     },
   })
-  revalidatePath('/admin/facturas')
-  revalidatePath('/client/facturas')
+  revalidateAll()
 }
 
 // El admin puede cobrar una factura en cualquier estado: si el cliente nunca
 // reportó el envío (PENDING), puede registrar el cobro igual, con evidencia
 // propia o sin ninguna.
+//
+// Confirmar el cobro además registra la plata como Income. Antes sólo se
+// marcaba PAID y el dinero no aparecía nunca en Ingresos.
 export async function confirmFacturaPaid(
   id: string,
   receivedAmountCOP: number,
@@ -79,26 +91,92 @@ export async function confirmFacturaPaid(
 ) {
   await requireAdmin()
 
-  await prisma.serviceInvoice.update({
+  if (!(receivedAmountCOP > 0)) {
+    throw new Error('El monto recibido debe ser mayor que cero')
+  }
+
+  const factura = await prisma.serviceInvoice.findUnique({
     where: { id },
-    data: {
+    select: {
+      id: true, companyId: true, invoiceNumber: true, period: true,
+      sentAmountUSD: true, incomeId: true,
+      company: { select: { name: true } },
+    },
+  })
+  if (!factura) throw new Error('Cuenta de cobro no encontrada')
+
+  const recibidoAt = new Date()
+  const etiqueta = `Cuenta de cobro ${factura.invoiceNumber ?? factura.period} — ${factura.company.name}`
+
+  // El USD que aporta el admin manda sobre el que reportó el cliente
+  const usd = extra?.sentAmountUSD != null ? extra.sentAmountUSD : factura.sentAmountUSD
+  const trm = usd && usd > 0 ? receivedAmountCOP / usd : null
+
+  await prisma.$transaction(async (tx) => {
+    const datosFactura = {
       status: 'PAID',
       receivedAmountCOP,
-      receivedAt: new Date(),
-      paidAt: new Date(),
+      receivedAt: recibidoAt,
+      paidAt: recibidoAt,
       // Sólo se escriben si el admin los aportó: una factura que el cliente ya
       // marcó como enviada conserva su monto en USD y su evidencia original.
       ...(extra?.sentAmountUSD != null ? { sentAmountUSD: extra.sentAmountUSD } : {}),
       ...(extra?.evidenceUrl ? { sentEvidenceUrl: extra.evidenceUrl } : {}),
-    },
+    }
+
+    if (factura.incomeId) {
+      // Ya tenía ingreso: se corrige en vez de duplicarlo
+      await tx.income.update({
+        where: { id: factura.incomeId },
+        data: {
+          amountCOP: receivedAmountCOP,
+          amountUSD: usd,
+          exchangeRate: trm,
+          description: etiqueta,
+        },
+      })
+      await tx.serviceInvoice.update({ where: { id }, data: datosFactura })
+      return
+    }
+
+    const income = await tx.income.create({
+      data: {
+        companyId: factura.companyId,
+        date: recibidoAt,
+        amountCOP: receivedAmountCOP,
+        amountUSD: usd,
+        exchangeRate: trm,
+        platform: 'WISE',
+        description: etiqueta,
+      },
+      select: { id: true },
+    })
+
+    await tx.serviceInvoice.update({
+      where: { id },
+      data: { ...datosFactura, incomeId: income.id },
+    })
   })
 
-  revalidatePath('/admin/facturas')
-  revalidatePath('/client/facturas')
+  revalidateAll()
 }
 
+// Borrar la cuenta de cobro borra también el ingreso que generó,
+// para que el saldo no quede inflado.
 export async function deleteFactura(id: string) {
-  await prisma.serviceInvoice.delete({ where: { id } })
-  revalidatePath('/admin/facturas')
-  revalidatePath('/client/facturas')
+  await requireAdmin()
+
+  const factura = await prisma.serviceInvoice.findUnique({
+    where: { id },
+    select: { incomeId: true },
+  })
+
+  await prisma.$transaction(async (tx) => {
+    await tx.serviceInvoice.delete({ where: { id } })
+    if (factura?.incomeId) {
+      await tx.income.delete({ where: { id: factura.incomeId } })
+    }
+  })
+
+  revalidateAll()
 }

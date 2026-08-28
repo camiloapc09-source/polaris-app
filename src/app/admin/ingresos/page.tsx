@@ -16,6 +16,11 @@ export default async function IngresosPage() {
     }),
   ])
 
+  const companies = await prisma.company.findMany({
+    select: { id: true, name: true },
+    orderBy: { name: 'asc' },
+  })
+
   const totalCOP = incomes.reduce((s, i) => s + i.amountCOP, 0)
   const totalUSD = incomes.reduce((s, i) => s + (i.amountUSD || 0), 0)
 
@@ -34,7 +39,7 @@ export default async function IngresosPage() {
             Pagos recibidos de clientes vía WISE
           </p>
         </div>
-        <NuevoIngresoForm />
+        <NuevoIngresoForm companies={companies} />
       </div>
 
       <PagosPendientes payments={pendingPayments} />
