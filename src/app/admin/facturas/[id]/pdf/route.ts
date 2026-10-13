@@ -251,11 +251,11 @@ export async function GET(
     <div class="panel">
       <div class="panel-header purple"><span>Datos de Pago</span></div>
       <div class="panel-body">
-        <div class="pago-row"><span class="pago-label">Titular:</span><span class="pago-val">Mar&iacute;a Camila Pont&oacute;n Camargo</span></div>
-        <div class="pago-row"><span class="pago-label">CC:</span><span class="pago-val">1.002.153.088</span></div>
-        <div class="pago-row"><span class="pago-label">Banco:</span><span class="pago-val">Bancolombia</span></div>
-        <div class="pago-row"><span class="pago-label">Tipo:</span><span class="pago-val">Ahorros / A la mano</span></div>
-        <div class="pago-row"><span class="pago-label">N&uacute;mero:</span><span class="pago-val">91276281564</span></div>
+        <div class="pago-row"><span class="pago-label">Titular:</span><span class="pago-val">Star Shine Productions SAS</span></div>
+        <div class="pago-row"><span class="pago-label">NIT:</span><span class="pago-val">901.623.011-3</span></div>
+        <div class="pago-row"><span class="pago-label">Banco:</span><span class="pago-val">Davivienda</span></div>
+        <div class="pago-row"><span class="pago-label">Tipo:</span><span class="pago-val">Cuenta de Ahorros</span></div>
+        <div class="pago-row"><span class="pago-label">N&uacute;mero:</span><span class="pago-val">025700161752</span></div>
         <div class="pago-row"><span class="pago-label">Concepto:</span><span class="pago-val">Cuenta de Cobro No. ${invNum} &mdash; ${escapeHtml(company.name.toUpperCase())}</span></div>
       </div>
     </div>
