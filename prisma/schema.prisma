@@ -74,6 +74,7 @@ model Employee {
   leaveRequests        LeaveRequest[]
   certificados         CertificadoLaboral[]
   examenesMedicos      ExamenMedico[]
+  citasMedicas         CitaMedica[]
   inscripciones        InscripcionBienestar[]
   performanceReviews   PerformanceReview[]
 }
@@ -241,6 +242,28 @@ model ExamenMedico {
 
   employee   Employee @relation(fields: [employeeId], references: [id])
   employeeId String
+}
+
+// Cita médica personal que el empleado reporta (EPS, especialista, odontología...).
+// Star Shine la aprueba o rechaza; el cliente sólo la ve para estar enterado.
+model CitaMedica {
+  id            String    @id @default(cuid())
+  type          String    @default("GENERAL") // GENERAL, ESPECIALISTA, ODONTOLOGIA, EXAMENES, TERAPIA, OTRO
+  appointmentAt DateTime  // fecha y hora de la cita
+  durationHours Float?    // tiempo estimado fuera del trabajo
+  place         String?   // EPS / clínica / dirección
+  reason        String?   // motivo que da el empleado
+  documentUrl   String?   // soporte de la cita (opcional)
+  status        String    @default("PENDING") // PENDING, APPROVED, REJECTED, CANCELLED
+  adminNote     String?   // respuesta de Star Shine
+  reviewedAt    DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  employee   Employee @relation(fields: [employeeId], references: [id])
+  employeeId String
+
+  @@index([employeeId, appointmentAt])
 }
 
 model ProgramaBienestar {

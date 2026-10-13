@@ -8,7 +8,7 @@ import {
   LayoutDashboard, Users, DollarSign, TrendingUp,
   FileText, LogOut, Building2, Calendar, Receipt,
   HeartPulse, Stethoscope, Heart, Award, Send,
-  ShieldCheck, UserCog, Menu, X, ClipboardList, ListChecks,
+  ShieldCheck, UserCog, Menu, X, ClipboardList, ListChecks, CalendarClock,
 } from 'lucide-react'
 
 interface NavItem { href: string; label: string; icon: React.ElementType; section?: string }
@@ -22,6 +22,7 @@ const adminNav: NavItem[] = [
   { href: '/admin/ingresos',       label: 'Ingresos',           icon: TrendingUp },
   { href: '/admin/facturas',       label: 'Facturas Servicio',  icon: Receipt },
   { href: '/admin/incapacidades',  label: 'Incapacidades',      icon: Calendar },
+  { href: '/admin/citas',          label: 'Citas Médicas',      icon: CalendarClock },
   { href: '/admin/desempeno',      label: 'Desempeño',          icon: ClipboardList, section: 'Servicios' },
   { href: '/admin/plantillas',     label: 'Plantillas de Tareas', icon: ListChecks,  section: 'Servicios' },
   { href: '/admin/certificados',   label: 'Certificados',       icon: Award,       section: 'Servicios' },
@@ -37,6 +38,7 @@ const clientNav: NavItem[] = [
   { href: '/client/pagos',         label: 'Pagos Enviados',   icon: Send },
   { href: '/client/colillas',      label: 'Colillas y Aportes', icon: FileText },
   { href: '/client/facturas',      label: 'Facturas',         icon: Receipt },
+  { href: '/client/citas',         label: 'Citas Médicas',    icon: CalendarClock },
   { href: '/client/examenes',      label: 'Exámenes Médicos', icon: Stethoscope },
   { href: '/client/bienestar',     label: 'Bienestar',        icon: Heart },
   { href: '/client/cuenta',        label: 'Mi Cuenta',        icon: UserCog,     section: 'Configuración' },
@@ -46,6 +48,7 @@ const employeeNav: NavItem[] = [
   { href: '/employee',                   label: 'Mi Panel',           icon: LayoutDashboard },
   { href: '/employee/colillas',          label: 'Colillas de Pago',   icon: FileText },
   { href: '/employee/incapacidades',     label: 'Mis Incapacidades',  icon: HeartPulse },
+  { href: '/employee/citas',             label: 'Citas Médicas',      icon: CalendarClock },
   { href: '/employee/desempeno',         label: 'Mi Desempeño',       icon: ClipboardList },
   { href: '/employee/certificados',      label: 'Certificados',       icon: Award },
   { href: '/employee/examenes',          label: 'Exámenes Médicos',   icon: Stethoscope },
