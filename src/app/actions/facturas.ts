@@ -63,6 +63,50 @@ export async function createFactura(data: {
   revalidateAll()
 }
 
+// Una cuenta de cobro se puede corregir (quitar o cambiar ítems, número,
+// fecha) mientras no esté cobrada. Una vez PAID ya generó un Income y sus
+// montos quedan fijos.
+export async function updateFactura(id: string, data: {
+  companyId: string
+  invoiceNumber: string
+  invoiceDate: string
+  period: string
+  lineItemsJson: string
+}) {
+  await requireAdmin()
+
+  const actual = await prisma.serviceInvoice.findUnique({
+    where: { id },
+    select: { status: true },
+  })
+  if (!actual) throw new Error('Cuenta de cobro no encontrada')
+  if (actual.status === 'PAID') throw new Error('No se puede editar una cuenta de cobro ya cobrada')
+
+  let items: StoredLineItem[] = []
+  try { items = JSON.parse(data.lineItemsJson) } catch {}
+  if (items.length === 0) throw new Error('La cuenta de cobro debe tener al menos un ítem')
+
+  const baseAmount = items.reduce((s, i) => s + i.baseAmount, 0)
+  const iva = items.reduce((s, i) => s + i.ivaAmount, 0)
+  const total = items.reduce((s, i) => s + i.total, 0)
+
+  await prisma.serviceInvoice.update({
+    where: { id },
+    data: {
+      companyId: data.companyId,
+      invoiceNumber: data.invoiceNumber || null,
+      invoiceDate: data.invoiceDate ? new Date(data.invoiceDate) : null,
+      period: data.period,
+      lineItemsJson: items as any,
+      baseAmount,
+      iva,
+      total,
+    },
+  })
+
+  revalidateAll()
+}
+
 export async function markFacturaSent(id: string, amountUSD: number, evidenceUrl: string) {
   await requireAdmin()
 

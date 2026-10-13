@@ -32,9 +32,11 @@ interface Props {
   sentEvidenceUrl?: string | null
   sentAmountUSD?: number | null
   companyName: string
+  // Botón de edición (sólo llega si la factura aún no está cobrada)
+  editButton?: React.ReactNode
 }
 
-export function FacturaActions({ id, status, sentEvidenceUrl, sentAmountUSD, companyName }: Props) {
+export function FacturaActions({ id, status, sentEvidenceUrl, sentAmountUSD, companyName, editButton }: Props) {
   const [loading, setLoading]       = useState(false)
   const [uploading, setUploading]   = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
@@ -142,6 +144,8 @@ export function FacturaActions({ id, status, sentEvidenceUrl, sentAmountUSD, com
             Evidencia
           </a>
         )}
+
+        {status !== 'PAID' && editButton}
 
         {status === 'PENDING' && (
           <button

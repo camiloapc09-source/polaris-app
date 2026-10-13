@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, X, Trash2 } from 'lucide-react'
-import { createFactura } from '@/app/actions/facturas'
+import { Plus, X, Trash2, Pencil } from 'lucide-react'
+import { createFactura, updateFactura, type StoredLineItem } from '@/app/actions/facturas'
 
 const inputStyle = {
   width: '100%',
@@ -38,6 +38,16 @@ interface LineItemState {
 
 interface Company { id: string; name: string }
 
+// Datos de una cuenta de cobro ya emitida: si llegan, el formulario abre en
+// modo edición con sus ítems precargados.
+export interface FacturaEditable {
+  id: string
+  companyId: string
+  invoiceNumber: string | null
+  invoiceDate: string | null
+  lineItems: StoredLineItem[]
+}
+
 const DOT_COLORS = ['#4329A6', '#F2421A', '#4329A6', '#F2421A', '#4329A6', '#F2421A']
 
 function newId() { return Math.random().toString(36).slice(2) }
@@ -50,13 +60,35 @@ function initItems(): LineItemState[] {
   ]
 }
 
-export function NuevaFacturaForm({ companies }: { companies: Company[] }) {
+function itemsFromStored(stored: StoredLineItem[]): LineItemState[] {
+  return stored.map(i => ({
+    id: newId(),
+    description: i.description ?? '',
+    subtitle: i.subtitle ?? '',
+    period: i.period ?? '',
+    baseAmount: i.baseAmount ? String(i.baseAmount) : '',
+    hasIVA: !!i.hasIVA,
+    hasGastos: (i.gastosAmount ?? 0) > 0,
+  }))
+}
+
+const today = () => new Date().toISOString().slice(0, 10)
+
+export function NuevaFacturaForm({ companies, factura }: { companies: Company[]; factura?: FacturaEditable }) {
+  const editing = !!factura
+  const initial = () => ({
+    companyId: factura?.companyId ?? '',
+    invoiceNumber: factura?.invoiceNumber ?? '',
+    invoiceDate: factura ? (factura.invoiceDate ?? '') : today(),
+    items: factura ? itemsFromStored(factura.lineItems) : initItems(),
+  })
+
   const [open, setOpen]               = useState(false)
   const [saving, setSaving]           = useState(false)
-  const [companyId, setCompanyId]     = useState('')
-  const [invoiceNumber, setInvoiceNumber] = useState('')
-  const [invoiceDate, setInvoiceDate] = useState(new Date().toISOString().slice(0, 10))
-  const [items, setItems]             = useState<LineItemState[]>(initItems)
+  const [companyId, setCompanyId]     = useState(() => initial().companyId)
+  const [invoiceNumber, setInvoiceNumber] = useState(() => initial().invoiceNumber)
+  const [invoiceDate, setInvoiceDate] = useState(() => initial().invoiceDate)
+  const [items, setItems]             = useState<LineItemState[]>(() => initial().items)
 
   const fmt = (v: number) =>
     v > 0
@@ -86,10 +118,24 @@ export function NuevaFacturaForm({ companies }: { companies: Company[] }) {
   function handleClose() {
     setOpen(false)
     setSaving(false)
-    setCompanyId('')
-    setInvoiceNumber('')
-    setInvoiceDate(new Date().toISOString().slice(0, 10))
-    setItems(initItems())
+    const init = initial()
+    setCompanyId(init.companyId)
+    setInvoiceNumber(init.invoiceNumber)
+    setInvoiceDate(init.invoiceDate)
+    setItems(init.items)
+  }
+
+  // Al abrir en modo edición se recarga lo guardado, por si la factura cambió
+  // desde que se montó la fila.
+  function handleOpen() {
+    if (editing) {
+      const init = initial()
+      setCompanyId(init.companyId)
+      setInvoiceNumber(init.invoiceNumber)
+      setInvoiceDate(init.invoiceDate)
+      setItems(init.items)
+    }
+    setOpen(true)
   }
 
   const grandTotal = items.reduce((s, i) => s + getCalc(i).total, 0)
@@ -120,13 +166,22 @@ export function NuevaFacturaForm({ companies }: { companies: Company[] }) {
 
     const period = invoiceDate ? invoiceDate.slice(0, 7) : new Date().toISOString().slice(0, 7)
 
-    await createFactura({
+    const payload = {
       companyId,
       invoiceNumber,
       invoiceDate,
       period,
       lineItemsJson: JSON.stringify(lineItems),
-    })
+    }
+
+    try {
+      if (factura) await updateFactura(factura.id, payload)
+      else await createFactura(payload)
+    } catch (err) {
+      setSaving(false)
+      alert(err instanceof Error ? err.message : 'No se pudo guardar la factura')
+      return
+    }
 
     setSaving(false)
     handleClose()
@@ -134,20 +189,36 @@ export function NuevaFacturaForm({ companies }: { companies: Company[] }) {
 
   return (
     <>
-      <button
-        onClick={() => setOpen(true)}
-        style={{
-          display: 'inline-flex', alignItems: 'center', gap: 8,
-          background: '#4429A6', color: 'white',
-          fontWeight: 600, fontSize: 14,
-          padding: '10px 20px', borderRadius: 12,
-          border: 'none', cursor: 'pointer',
-          fontFamily: 'Poppins, sans-serif',
-        }}
-      >
-        <Plus size={16} />
-        Nueva Factura
-      </button>
+      {editing ? (
+        <button
+          onClick={handleOpen}
+          title="Editar factura"
+          style={{
+            background: '#F4F4F7', color: '#4429A6',
+            border: 'none', borderRadius: 8, padding: '6px 10px',
+            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
+            fontSize: 12, fontWeight: 600, fontFamily: 'Poppins, sans-serif',
+          }}
+        >
+          <Pencil size={13} />
+          Editar
+        </button>
+      ) : (
+        <button
+          onClick={handleOpen}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            background: '#4429A6', color: 'white',
+            fontWeight: 600, fontSize: 14,
+            padding: '10px 20px', borderRadius: 12,
+            border: 'none', cursor: 'pointer',
+            fontFamily: 'Poppins, sans-serif',
+          }}
+        >
+          <Plus size={16} />
+          Nueva Factura
+        </button>
+      )}
 
       {open && (
         <div
@@ -157,8 +228,14 @@ export function NuevaFacturaForm({ companies }: { companies: Company[] }) {
           <div style={{ background: 'white', borderRadius: 20, width: '100%', maxWidth: 740, maxHeight: '92vh', overflowY: 'auto', boxShadow: '0 24px 64px rgba(15,16,38,0.22)' }}>
             <div style={{ padding: '28px 32px', borderBottom: '1px solid #F0F0F0', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', position: 'sticky', top: 0, background: 'white', zIndex: 10 }}>
               <div>
-                <h2 style={{ color: '#0F1026', fontSize: 20, fontWeight: 800, marginBottom: 2 }}>Nueva Cuenta de Cobro</h2>
-                <p style={{ color: '#BBBBBB', fontSize: 13 }}>Factura de servicio de Star Shine al cliente</p>
+                <h2 style={{ color: '#0F1026', fontSize: 20, fontWeight: 800, marginBottom: 2 }}>
+                  {editing ? 'Editar Cuenta de Cobro' : 'Nueva Cuenta de Cobro'}
+                </h2>
+                <p style={{ color: '#BBBBBB', fontSize: 13 }}>
+                  {editing
+                    ? 'Puedes cambiarla mientras no esté marcada como cobrada'
+                    : 'Factura de servicio de Star Shine al cliente'}
+                </p>
               </div>
               <button onClick={handleClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#BBBBBB', padding: 4, marginTop: -4 }}>
                 <X size={20} />
@@ -393,7 +470,7 @@ export function NuevaFacturaForm({ companies }: { companies: Company[] }) {
                     transition: 'background 0.15s',
                   }}
                 >
-                  {saving ? 'Guardando...' : 'Crear Factura'}
+                  {saving ? 'Guardando...' : editing ? 'Guardar cambios' : 'Crear Factura'}
                 </button>
               </div>
             </form>

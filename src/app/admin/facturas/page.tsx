@@ -3,6 +3,7 @@ import { formatCOP } from '@/lib/utils'
 import { Receipt } from 'lucide-react'
 import { NuevaFacturaForm } from './NuevaFacturaForm'
 import { FacturaActions } from './FacturaActions'
+import type { StoredLineItem } from '@/app/actions/facturas'
 
 export default async function FacturasPage() {
   const [facturas, companies] = await Promise.all([
@@ -12,6 +13,8 @@ export default async function FacturasPage() {
     }),
     prisma.company.findMany({ orderBy: { name: 'asc' } }),
   ])
+
+  const companyOptions = companies.map(c => ({ id: c.id, name: c.name }))
 
   const totalPagado = facturas.filter(f => f.status === 'PAID').reduce((s, f) => s + f.total, 0)
   const totalPend   = facturas.filter(f => f.status !== 'PAID').reduce((s, f) => s + f.total, 0)
@@ -38,7 +41,7 @@ export default async function FacturasPage() {
             Facturación mensual a clientes por servicios EOR
           </p>
         </div>
-        <NuevaFacturaForm companies={companies.map(c => ({ id: c.id, name: c.name }))} />
+        <NuevaFacturaForm companies={companyOptions} />
       </div>
 
       {/* Stats */}
@@ -136,6 +139,18 @@ export default async function FacturasPage() {
                     sentEvidenceUrl={f.sentEvidenceUrl}
                     sentAmountUSD={f.sentAmountUSD}
                     companyName={f.company.name}
+                    editButton={f.status !== 'PAID' && (
+                      <NuevaFacturaForm
+                        companies={companyOptions}
+                        factura={{
+                          id: f.id,
+                          companyId: f.companyId,
+                          invoiceNumber: f.invoiceNumber,
+                          invoiceDate: f.invoiceDate ? f.invoiceDate.toISOString().slice(0, 10) : null,
+                          lineItems: Array.isArray(f.lineItemsJson) ? (f.lineItemsJson as unknown as StoredLineItem[]) : [],
+                        }}
+                      />
+                    )}
                   />
                 </td>
               </tr>
